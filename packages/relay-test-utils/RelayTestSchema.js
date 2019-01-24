@@ -18,7 +18,9 @@ const graphql = require('graphql');
 const {
   buildASTSchema,
   parse,
+  parseType,
   GraphQLSchema,
+  GraphQLNonNull,
   GraphQLScalarType,
 } = require('graphql');
 
@@ -34,10 +36,10 @@ function createSchemaProxy(realSchema) {
       {
         get(target, prop, receiver) {
           switch (prop) {
+            case '__isProxy':
+              return true;
             case 'type':
-              let rawType = realField.type;
-              while (rawType.ofType) rawType = rawType.ofType;
-              return createTypeProxy(rawType.name);
+              return createTypeProxyFromRealType(realField.type);
             case 'args':
               // TODO
               return [];
@@ -68,35 +70,76 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createTypeProxy(typeName) {
+  function createNonNullTypeProxy(typeProxy) {
     return new Proxy(
       {},
       {
-        has(target, prop) {
-          console.log(`HAS type<${typeName}>.${prop}`);
-          return false;
-        },
-        get(target, prop, receiver) {
+        get(target, prop) {
           switch (prop) {
+            case '__isProxy':
+              return true;
             case 'constructor':
-              return realSchema.getType(typeName).constructor;
-            // return graphql.GraphQLScalarType;
+              return GraphQLNonNull;
+            case 'ofType':
+              return typeProxy;
             case 'toString':
-              return () => `ProxyThing<${typeName}>`;
-            case 'getFields':
-              return () => createFieldMapProxy(typeName);
+              return () => 'ffffff';
             default:
-              console.log(`GET type<${typeName}>.${prop.toString()}`);
+              console.log(`GET nonnull.${prop.toString()}`);
           }
         },
-        set(target, prop, value, receiver) {
-          console.log(`SET schema.${prop}`);
-        },
         getPrototypeOf() {
-          return realSchema.getType(typeName).constructor.prototype;
+          return GraphQLNonNull.prototype;
         },
       },
     );
+  }
+
+  function createTypeProxyFromRealType(realType) {
+    if (realType instanceof GraphQLNonNull) {
+      return createNonNullTypeProxy(
+        createTypeProxyFromRealType(realType.ofType),
+      );
+    }
+    return createTypeProxy(realType.name);
+  }
+
+  const typeProxyCache = new Map();
+  function createTypeProxy(typeName) {
+    let result = typeProxyCache.get(typeName);
+    if (result == null) {
+      result = new Proxy(
+        {},
+        {
+          has(target, prop) {
+            console.log(`HAS type<${typeName}>.${prop}`);
+            return false;
+          },
+          get(target, prop, receiver) {
+            switch (prop) {
+              case '__isProxy':
+                return true;
+              case 'constructor':
+                return realSchema.getType(typeName).constructor;
+              case 'toString':
+                return () => `ProxyThing<${typeName}>`;
+              case 'getFields':
+                return () => createFieldMapProxy(typeName);
+              default:
+                console.log(`GET type<${typeName}>.${prop.toString()}`);
+            }
+          },
+          set(target, prop, value, receiver) {
+            console.log(`SET schema.${prop}`);
+          },
+          getPrototypeOf() {
+            return realSchema.getType(typeName).constructor.prototype;
+          },
+        },
+      );
+      typeProxyCache.set(typeName, result);
+    }
+    return result;
   }
 
   return new Proxy(realSchema, {
@@ -106,6 +149,12 @@ function createSchemaProxy(realSchema) {
     },
     get(target, prop, receiver) {
       switch (prop) {
+        case '__isProxy':
+          return true;
+        case 'magic':
+          return createNonNullTypeProxy(createTypeProxy('ID'));
+        case 'magic2':
+          return createTypeProxy('ID');
         case 'getType':
           return name => createTypeProxy(name);
         case 'getQueryType':
@@ -139,5 +188,7 @@ function createSchemaProxy(realSchema) {
 }
 
 const proxySchema = createSchemaProxy(realSchema);
+
+// throw new Error('end');
 
 module.exports = proxySchema;
