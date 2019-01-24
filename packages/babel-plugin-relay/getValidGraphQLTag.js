@@ -10,7 +10,7 @@
 
 'use strict';
 
-const GraphQL = require('graphql');
+const GraphQL = require('graphql-shim');
 
 import type {DocumentNode} from 'graphql';
 

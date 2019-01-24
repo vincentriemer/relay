@@ -38,7 +38,7 @@ const {
   transformScalarType,
   transformInputType,
 } = require('./RelayFlowTypeTransformers');
-const {GraphQLInputObjectType, GraphQLNonNull} = require('graphql');
+const {GraphQLInputObjectType, GraphQLNonNull} = require('graphql-shim');
 
 import type {IRTransform} from '../../core/GraphQLCompilerContext';
 import type {Fragment, Root} from '../../core/GraphQLIR';

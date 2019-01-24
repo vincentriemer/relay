@@ -14,7 +14,7 @@ const RelayTestSchemaPath = require('./RelayTestSchemaPath');
 
 const fs = require('fs');
 
-const graphql = require('graphql');
+const graphql = require('graphql-shim');
 const {
   buildASTSchema,
   parse,
@@ -22,7 +22,7 @@ const {
   GraphQLSchema,
   GraphQLNonNull,
   GraphQLScalarType,
-} = require('graphql');
+} = require('graphql-shim');
 
 const realSchema = buildASTSchema(
   parse(fs.readFileSync(RelayTestSchemaPath, 'utf8'), {assumeValid: true}),

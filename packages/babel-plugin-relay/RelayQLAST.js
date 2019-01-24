@@ -37,7 +37,7 @@ const {
   SchemaMetaFieldDef,
   TypeMetaFieldDef,
   TypeNameMetaFieldDef,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   ArgumentNode,

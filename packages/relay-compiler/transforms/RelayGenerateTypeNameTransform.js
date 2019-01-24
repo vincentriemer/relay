@@ -15,7 +15,7 @@ const IRTransformer = require('../core/GraphQLIRTransformer');
 const SchemaUtils = require('../core/GraphQLSchemaUtils');
 
 const {hasUnaliasedSelection} = require('./RelayTransformUtils');
-const {assertLeafType} = require('graphql');
+const {assertLeafType} = require('graphql-shim');
 
 import type {LinkedField, MatchField, ScalarField} from '../core/GraphQLIR';
 

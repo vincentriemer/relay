@@ -16,7 +16,7 @@ const SchemaUtils = require('../core/GraphQLSchemaUtils');
 
 const invariant = require('invariant');
 
-const {GraphQLList} = require('graphql');
+const {GraphQLList} = require('graphql-shim');
 const {getStorageKey, stableCopy} = require('relay-runtime');
 
 import type {Metadata, Fragment} from '../core/GraphQLIR';

@@ -14,7 +14,7 @@ const RelayQLTransformer = require('./RelayQLTransformer');
 
 const getSchemaIntrospection = require('./getSchemaIntrospection');
 
-const {buildASTSchema, buildClientSchema} = require('graphql');
+const {buildASTSchema, buildClientSchema} = require('graphql-shim');
 
 import type {Validator} from './RelayQLTransformer';
 import type {GraphQLSchema} from 'graphql';

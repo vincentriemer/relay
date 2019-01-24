@@ -11,7 +11,7 @@
 'use strict';
 
 const {getRawType} = require('../core/GraphQLSchemaUtils');
-const {GraphQLNonNull, GraphQLList} = require('graphql');
+const {GraphQLNonNull, GraphQLList} = require('graphql-shim');
 
 import type {GraphQLType} from 'graphql';
 

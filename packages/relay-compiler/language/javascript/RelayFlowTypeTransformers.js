@@ -25,7 +25,7 @@ const {
   GraphQLObjectType,
   GraphQLScalarType,
   GraphQLUnionType,
-} = require('graphql');
+} = require('graphql-shim');
 
 export type ScalarTypeMapping = {
   [type: string]: string,

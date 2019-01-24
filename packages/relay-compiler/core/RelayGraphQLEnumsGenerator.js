@@ -12,7 +12,7 @@
 
 const SignedSource = require('signedsource');
 
-const {GraphQLEnumType} = require('graphql');
+const {GraphQLEnumType} = require('graphql-shim');
 
 import type CodegenDirectory from '../codegen/CodegenDirectory';
 import type {GraphQLSchema} from 'graphql';

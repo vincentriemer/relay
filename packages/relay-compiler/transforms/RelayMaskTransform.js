@@ -17,7 +17,7 @@ const IRTransformer = require('../core/GraphQLIRTransformer');
 
 const invariant = require('invariant');
 
-const {isTypeSubTypeOf, GraphQLSchema} = require('graphql');
+const {isTypeSubTypeOf, GraphQLSchema} = require('graphql-shim');
 
 import type {
   Fragment,

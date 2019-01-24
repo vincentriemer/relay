@@ -42,7 +42,7 @@ const {
   parse: parseGraphQL,
   parseType,
   Source,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   Argument,

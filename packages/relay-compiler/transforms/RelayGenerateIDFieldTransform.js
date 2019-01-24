@@ -19,7 +19,7 @@ const {
   assertAbstractType,
   assertCompositeType,
   assertLeafType,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   InlineFragment,

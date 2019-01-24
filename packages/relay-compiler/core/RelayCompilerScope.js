@@ -15,7 +15,7 @@ const {
   createUserError,
   eachWithErrors,
 } = require('./RelayCompilerError');
-const {GraphQLNonNull} = require('graphql');
+const {GraphQLNonNull} = require('graphql-shim');
 
 import type {
   Argument,

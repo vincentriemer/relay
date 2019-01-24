@@ -18,7 +18,7 @@ const RelayViewerHandleTransform = require('RelayViewerHandleTransform');
 const parseGraphQLText = require('parseGraphQLText');
 
 const {generateTestsFromFixtures} = require('RelayModernTestUtils');
-const {buildASTSchema, parse} = require('graphql');
+const {buildASTSchema, parse} = require('graphql-shim');
 
 describe('RelayViewerHandleTransform', () => {
   generateTestsFromFixtures(

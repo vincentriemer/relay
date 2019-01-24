@@ -20,7 +20,7 @@ const SchemaUtils = require('../core/GraphQLSchemaUtils');
 
 const compileRelayArtifacts = require('./compileRelayArtifacts');
 const crypto = require('crypto');
-const graphql = require('graphql');
+const graphql = require('graphql-shim');
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const path = require('path');

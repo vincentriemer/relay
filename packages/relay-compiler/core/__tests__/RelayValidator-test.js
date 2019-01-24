@@ -11,7 +11,7 @@
 
 'use strict';
 
-const GraphQL = require('graphql');
+const GraphQL = require('graphql-shim');
 const RelayTestSchema = require('RelayTestSchema');
 const RelayValidator = require('RelayValidator');
 

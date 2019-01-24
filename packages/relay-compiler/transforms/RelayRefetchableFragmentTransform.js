@@ -32,7 +32,7 @@ const {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   Argument,

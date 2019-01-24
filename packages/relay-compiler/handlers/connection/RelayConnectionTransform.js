@@ -29,7 +29,7 @@ const {
   GraphQLScalarType,
   GraphQLUnionType,
   parse,
-} = require('graphql');
+} = require('graphql-shim');
 const {ConnectionInterface} = require('relay-runtime');
 
 import type CompilerContext from '../../core/GraphQLCompilerContext';

@@ -14,7 +14,7 @@ const GraphQLCompilerContext = require('./GraphQLCompilerContext');
 const GraphQLIRVisitor = require('./GraphQLIRVisitor');
 
 const {createCompilerError} = require('./RelayCompilerError');
-const {GraphQLNonNull, GraphQLBoolean} = require('graphql');
+const {GraphQLNonNull, GraphQLBoolean} = require('graphql-shim');
 
 import type {
   ArgumentDefinition,

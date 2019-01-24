@@ -30,7 +30,7 @@ const {
   buildClientSchema,
   parse,
   printSchema,
-} = require('graphql');
+} = require('graphql-shim');
 
 const {
   commonTransforms,

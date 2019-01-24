@@ -26,7 +26,7 @@ const {
   GraphQLList,
   GraphQLString,
   getNullableType,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   InlineFragment,

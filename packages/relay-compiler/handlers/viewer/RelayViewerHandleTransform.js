@@ -14,7 +14,7 @@ const CompilerContext = require('../../core/GraphQLCompilerContext');
 const IRTransformer = require('../../core/GraphQLIRTransformer');
 const SchemaUtils = require('../../core/GraphQLSchemaUtils');
 
-const {GraphQLObjectType} = require('graphql');
+const {GraphQLObjectType} = require('graphql-shim');
 const {DEFAULT_HANDLE_KEY} = require('relay-runtime');
 
 import type {LinkedField, MatchField} from '../../core/GraphQLIR';

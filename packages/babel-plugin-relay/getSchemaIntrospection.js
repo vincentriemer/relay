@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const {SCHEMA_EXTENSION} = require('./GraphQLRelayDirective');
-const {parse} = require('graphql');
+const {parse} = require('graphql-shim');
 
 function getSchemaIntrospection(schemaPath: string, basePath: ?string) {
   try {

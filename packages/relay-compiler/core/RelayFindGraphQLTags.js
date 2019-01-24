@@ -13,7 +13,7 @@
 const RelayCompilerCache = require('../util/RelayCompilerCache');
 
 const getModuleName = require('../util/getModuleName');
-const graphql = require('graphql');
+const graphql = require('graphql-shim');
 const path = require('path');
 const util = require('util');
 

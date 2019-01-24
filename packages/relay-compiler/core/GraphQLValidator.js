@@ -31,7 +31,7 @@ const {
   ValuesOfCorrectTypeRule,
   VariablesAreInputTypesRule,
   VariablesInAllowedPositionRule,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {DocumentNode, GraphQLSchema} from 'graphql';
 

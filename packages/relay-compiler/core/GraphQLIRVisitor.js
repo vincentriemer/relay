@@ -10,7 +10,7 @@
 
 'use strict';
 
-const visit = require('graphql').visit;
+const visit = require('graphql-shim').visit;
 
 import type {
   Argument,

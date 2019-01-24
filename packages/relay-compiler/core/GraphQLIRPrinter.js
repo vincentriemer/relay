@@ -18,7 +18,7 @@ const {
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {CompilerContextDocument} from './GraphQLCompilerContext';
 import type {

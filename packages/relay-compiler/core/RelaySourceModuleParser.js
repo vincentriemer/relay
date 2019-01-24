@@ -11,7 +11,7 @@
 'use strict';
 
 const ASTCache = require('./ASTCache');
-const GraphQL = require('graphql');
+const GraphQL = require('graphql-shim');
 const Profiler = require('./GraphQLCompilerProfiler');
 
 const fs = require('fs');

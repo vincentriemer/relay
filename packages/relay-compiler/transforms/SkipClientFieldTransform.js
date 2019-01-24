@@ -24,7 +24,7 @@ const {
   SchemaMetaFieldDef,
   TypeMetaFieldDef,
   TypeNameMetaFieldDef,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {CompilerContextDocument} from '../core/GraphQLCompilerContext';
 import type {Field, FragmentSpread, InlineFragment} from '../core/GraphQLIR';

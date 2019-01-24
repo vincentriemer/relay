@@ -15,7 +15,7 @@ const ASTCache = require('./ASTCache');
 const fs = require('fs');
 const path = require('path');
 
-const {parse, Source} = require('graphql');
+const {parse, Source} = require('graphql-shim');
 
 import type {File} from '../codegen/CodegenTypes';
 import type {DocumentNode} from 'graphql';

@@ -25,7 +25,7 @@ const {
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLUnionType,
-} = require('graphql');
+} = require('graphql-shim');
 
 import type {
   ASTNode,

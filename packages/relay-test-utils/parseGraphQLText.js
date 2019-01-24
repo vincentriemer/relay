@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {extendSchema, parse} = require('graphql');
+const {extendSchema, parse} = require('graphql-shim');
 const {Parser, convertASTDocuments} = require('relay-compiler');
 
 import type {GraphQLSchema} from 'graphql';

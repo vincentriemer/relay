@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {GraphQLError} = require('graphql');
+const {GraphQLError} = require('graphql-shim');
 
 import type {Location} from './GraphQLIR';
 import type {ASTNode, Source, SourceLocation} from 'graphql';
