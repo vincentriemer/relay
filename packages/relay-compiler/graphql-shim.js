@@ -73,6 +73,8 @@ function createNonNullTypeProxy(typeProxy) {
           case Symbol.iterator:
           case Symbol.toPrimitive:
           case 'asymmetricMatch':
+          case require('util').inspect.custom:
+          case Symbol.toStringTag:
             return undefined;
           default:
             throw new Error(`GET nonnull.${prop.toString()}`);
@@ -374,6 +376,7 @@ module.exports = new Proxy(
     parse: graphql.parse,
     parseType: graphql.parseType,
     print: graphql.print,
+    visit: graphql.visit,
 
     SchemaMetaFieldDef: graphql.SchemaMetaFieldDef,
     TypeMetaFieldDef: graphql.TypeMetaFieldDef,
