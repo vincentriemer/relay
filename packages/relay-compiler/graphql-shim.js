@@ -40,6 +40,21 @@ const GraphQLNonNull = new Proxy(function() {}, {
   },
 });
 
+function createNonConstructableProxy(wrappedType) {
+  return new Proxy(
+    {},
+    {
+      get(target, prop) {
+        switch (prop) {
+          case Symbol.hasInstance:
+            return obj => obj instanceof wrappedType;
+        }
+        throw new Error(`GET NonConstructableProxy.${prop}`);
+      },
+    },
+  );
+}
+
 function createNonNullTypeProxy(typeProxy) {
   assertProxy(typeProxy);
   return new Proxy(
@@ -54,7 +69,11 @@ function createNonNullTypeProxy(typeProxy) {
           case 'ofType':
             return typeProxy;
           case 'toString':
-            return () => 'NonNullProxy';
+            return () => `${typeProxy}!`;
+          case Symbol.iterator:
+          case Symbol.toPrimitive:
+          case 'asymmetricMatch':
+            return undefined;
           default:
             throw new Error(`GET nonnull.${prop.toString()}`);
         }
@@ -79,7 +98,7 @@ function createListProxy(typeProxy) {
           case 'ofType':
             return typeProxy;
           case 'toString':
-            return () => 'ListProxy';
+            return () => `[${typeProxy}]`;
           default:
             throw new Error(`GET list.${prop.toString()}`);
         }
@@ -202,14 +221,40 @@ function createSchemaProxy(realSchema) {
                 return true;
               case 'constructor':
                 return realSchema.getType(typeName).constructor;
+              case 'toJSON':
               case 'toString':
-                return () => `ProxyThing<${typeName}>`;
+                return () => typeName;
               case 'parseLiteral':
                 return realSchema.getType(typeName).parseLiteral;
               case 'getFields':
                 return () => createFieldMapProxy(typeName);
+              case 'name':
+                return typeName;
+              case 'getInterfaces':
+                return () =>
+                  realSchema
+                    .getType(typeName)
+                    .getInterfaces()
+                    .map(interfaceType =>
+                      createTypeProxyFromRealType(interfaceType),
+                    );
+              case 'getTypes':
+                return () =>
+                  realSchema
+                    .getType(typeName)
+                    .getTypes()
+                    .map(interfaceType =>
+                      createTypeProxyFromRealType(interfaceType),
+                    );
+              case 'asymmetricMatch':
+              case Symbol.for('util.inspect.custom'):
+              case require('util').inspect.custom:
+              case Symbol.toStringTag:
+              case Symbol.iterator:
+              case Symbol.toPrimitive:
+                return undefined;
               default:
-                console.log(`GET type<${typeName}>.${prop.toString()}`);
+                throw new Error(`GET type<${typeName}>.${prop.toString()}`);
             }
           },
           set(target, prop, value, receiver) {
@@ -247,6 +292,14 @@ function createSchemaProxy(realSchema) {
           return name => createTypeProxy(name);
         case 'getQueryType':
           return () => createTypeProxy('Query');
+        case 'getMutationType':
+          return () => createTypeProxy('Mutation');
+        case 'getPossibleTypes':
+          return abstractType => {
+            return realSchema
+              .getPossibleTypes(abstractType)
+              .map(realType => createTypeProxyFromRealType(realType));
+          };
         case 'getDirective':
           return createDirectiveProxy;
         case '__validationErrors':
@@ -299,16 +352,25 @@ module.exports = new Proxy(
     extendSchema,
     validate,
     GraphQLNonNull,
+    GraphQLEnumType: createNonConstructableProxy(graphql.GraphQLEnumType),
+    GraphQLUnionType: createNonConstructableProxy(graphql.GraphQLUnionType),
+
+    GraphQLError: graphql.GraphQLError,
+    Source: graphql.Source,
 
     assertCompositeType: graphql.assertCompositeType,
     assertInputType: graphql.assertInputType,
     assertOutputType: graphql.assertOutputType,
+    assertLeafType: graphql.assertLeafType,
+    assertAbstractType: graphql.assertAbstractType,
+
     getNamedType: graphql.getNamedType,
     getNullableType: graphql.getNullableType,
-    GraphQLError: graphql.GraphQLError,
+
     isLeafType: graphql.isLeafType,
     isType: graphql.isType,
     isTypeSubTypeOf: graphql.isTypeSubTypeOf,
+
     parse: graphql.parse,
     parseType: graphql.parseType,
     print: graphql.print,
