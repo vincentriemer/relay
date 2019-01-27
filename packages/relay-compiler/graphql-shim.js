@@ -34,6 +34,9 @@ const GraphQLNonNull = new Proxy(function() {}, {
     }
     throw new Error(`GET GraphQLNonNull.${prop}`);
   },
+  has(target, prop) {
+    throw new Error(`HAS GraphQLNonNull.${prop}`);
+  },
   construct(target, [ofType]) {
     assertProxy(ofType);
     return createNonNullTypeProxy(ofType);
@@ -112,6 +115,7 @@ function createNonNullTypeProxy(typeProxy) {
             return graphql.GraphQLNonNull;
           case 'ofType':
             return typeProxy;
+          case 'toJSON':
           case 'toString':
             return () => `${typeProxy}!`;
           case Symbol.iterator:
