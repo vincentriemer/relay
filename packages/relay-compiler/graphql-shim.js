@@ -195,6 +195,8 @@ function createSchemaProxy(realSchema) {
               return createTypeProxyFromRealType(realField.type);
             case 'args':
               return realField.args.map(arg => createArgProxy(arg));
+            case 'name':
+              return fieldName;
             default:
               throw new Error(`GET field<${typeName}.${fieldName}>.${prop}`);
           }
@@ -227,19 +229,11 @@ function createSchemaProxy(realSchema) {
   function createFieldMapProxy(typeName) {
     const realType = realSchema.getType(typeName);
     const realFields = realType.getFields();
-    return new Proxy(
-      {},
-      {
-        get(target, prop, receiver) {
-          if (prop in realFields) {
-            return createFieldProxy(typeName, prop);
-          }
-        },
-        has(target, prop) {
-          throw new Error(`HAS fieldMap<${typeName}>`);
-        },
-      },
-    );
+    const map = {};
+    for (const fieldName in realFields) {
+      map[fieldName] = createFieldProxy(typeName, fieldName);
+    }
+    return map;
   }
 
   function createTypeProxyFromRealType(realType) {
