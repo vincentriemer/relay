@@ -91,7 +91,6 @@ function createNonNullTypeProxy(typeProxy) {
           case 'asymmetricMatch':
           case require('util').inspect.custom:
           case Symbol.toStringTag:
-          case 'toJSON':
             return undefined;
           default:
             throw new Error(`GET nonnull.${prop.toString()}`);
@@ -371,8 +370,6 @@ function createSchemaProxy(realSchema) {
     },
   });
 }
-
-// const proxySchema = createSchemaProxy(realSchema);
 
 function buildASTSchema(ast, options) {
   return createSchemaProxy(graphql.buildASTSchema(ast, options));
