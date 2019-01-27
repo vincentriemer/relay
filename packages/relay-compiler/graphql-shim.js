@@ -257,8 +257,7 @@ function createSchemaProxy(realSchema) {
         {},
         {
           has(target, prop) {
-            console.log(`HAS type<${typeName}>.${prop}`);
-            return false;
+            throw new Error(`HAS type<${typeName}>.${prop}`);
           },
           get(target, prop, receiver) {
             switch (prop) {
@@ -318,8 +317,7 @@ function createSchemaProxy(realSchema) {
 
   return new Proxy(realSchema, {
     has(target, prop) {
-      console.log(`HAS schema.${prop}`);
-      return false;
+      throw new Error(`HAS schema.${prop}`);
     },
     get(target, prop, receiver) {
       switch (prop) {
@@ -357,13 +355,12 @@ function createSchemaProxy(realSchema) {
       }
     },
     set(target, prop, value, receiver) {
-      console.log(`SET schema.${prop}`);
-
       switch (prop) {
         case '__validationErrors':
           target.__validationErrors = value;
           return true;
       }
+      throw new Error(`SET schema.${prop}`);
     },
     getPrototypeOf() {
       return graphql.GraphQLSchema.prototype;
