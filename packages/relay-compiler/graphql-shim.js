@@ -203,7 +203,7 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createDirectiveProxy(directiveName, ...args) {
+  function createDirectiveProxy(directiveName) {
     const realDirective = realSchema.getDirective(directiveName);
     return new Proxy(
       {},
@@ -214,6 +214,8 @@ function createSchemaProxy(realSchema) {
               return true;
             case 'args':
               return realDirective.args.map(arg => createArgProxy(arg));
+            case 'name':
+              return realDirective.name;
             default:
               throw new Error(`GET directive<${directiveName}>.${prop}`);
           }
@@ -372,6 +374,11 @@ function createSchemaProxy(realSchema) {
           };
         case 'getDirective':
           return createDirectiveProxy;
+        case 'getDirectives':
+          return () =>
+            realSchema
+              .getDirectives()
+              .map(directive => createDirectiveProxy(directive.name));
         case '__validationErrors':
           return target[prop];
         default:
