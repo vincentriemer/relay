@@ -11,6 +11,13 @@
 'use strict';
 
 const graphql = require('graphql');
+const {
+  GraphQLInt,
+  GraphQLFloat,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLID,
+} = require('./shim/scalars');
 
 function assertProxy(thing) {
   if (thing == null) {
@@ -19,7 +26,6 @@ function assertProxy(thing) {
   if (thing.__isProxy !== true) {
     throw new Error('Expected a proxy, but got an actual value');
   }
-  return thing;
 }
 
 const GraphQLNonNull = new Proxy(function() {}, {
@@ -42,44 +48,6 @@ const GraphQLNonNull = new Proxy(function() {}, {
     return createNonNullTypeProxy(ofType);
   },
 });
-
-const GraphQLInt = createScalarTypeProxy(graphql.GraphQLInt);
-const GraphQLFloat = createScalarTypeProxy(graphql.GraphQLFloat);
-const GraphQLString = createScalarTypeProxy(graphql.GraphQLString);
-const GraphQLBoolean = createScalarTypeProxy(graphql.GraphQLBoolean);
-const GraphQLID = createScalarTypeProxy(graphql.GraphQLID);
-
-function createScalarTypeProxy(wrappedType) {
-  return new Proxy(
-    {},
-    {
-      get(target, prop) {
-        switch (prop) {
-          case '__isProxy':
-            return true;
-          case Symbol.toPrimitive:
-            return undefined;
-          case 'toString':
-            return wrappedType.toString;
-          case 'name':
-            return wrappedType.name;
-          case 'toJSON':
-            return wrappedType.toJSON;
-          case 'constructor':
-            return wrappedType.constructor;
-          case 'parseLiteral':
-            return wrappedType.parseLiteral;
-          case Symbol.hasInstance:
-            return obj => obj instanceof wrappedType;
-        }
-        throw new Error(`GET ScalareTypeProxy.${String(prop)}`);
-      },
-      getPrototypeOf() {
-        return wrappedType.constructor.prototype;
-      },
-    },
-  );
-}
 
 function createNonConstructableProxy(wrappedType) {
   return new Proxy(
