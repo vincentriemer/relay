@@ -282,6 +282,10 @@ function createSchemaProxy(realSchema) {
     }
     let result = typeProxyCache.get(typeName);
     if (result == null) {
+      const realType = realSchema.getType(typeName);
+      if (realType == null) {
+        return null;
+      }
       result = new Proxy(
         {},
         {
@@ -294,7 +298,7 @@ function createSchemaProxy(realSchema) {
               case '__isProxy':
                 return true;
               case 'constructor':
-                return realSchema.getType(typeName).constructor;
+                return realType.constructor;
               case 'toJSON':
               case 'toString':
                 return () => typeName;
@@ -304,25 +308,23 @@ function createSchemaProxy(realSchema) {
                 return typeName;
               case 'getInterfaces':
                 return () =>
-                  realSchema
-                    .getType(typeName)
+                  realType
                     .getInterfaces()
                     .map(interfaceType =>
                       createTypeProxyFromRealType(interfaceType),
                     );
               case 'getTypes':
                 return () =>
-                  realSchema
-                    .getType(typeName)
+                  realType
                     .getTypes()
                     .map(interfaceType =>
                       createTypeProxyFromRealType(interfaceType),
                     );
               case 'parseLiteral':
-                return ast => realSchema.getType(typeName).parseLiteral(ast);
+                return ast => realType.parseLiteral(ast);
               case 'getValues':
                 // enum values
-                return () => realSchema.getType(typeName).getValues();
+                return () => realType.getValues();
               case 'asymmetricMatch':
               case Symbol.for('util.inspect.custom'):
               case require('util').inspect.custom:
@@ -338,7 +340,7 @@ function createSchemaProxy(realSchema) {
             throw new Error(`SET type.${prop}`);
           },
           getPrototypeOf() {
-            return realSchema.getType(typeName).constructor.prototype;
+            return realType.constructor.prototype;
           },
         },
       );
