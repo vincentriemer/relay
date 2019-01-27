@@ -256,9 +256,6 @@ function createSchemaProxy(realSchema) {
       result = new Proxy(
         {},
         {
-          has(target, prop) {
-            throw new Error(`HAS type<${typeName}>.${prop}`);
-          },
           get(target, prop, receiver) {
             switch (prop) {
               case '__isProxy':
@@ -302,9 +299,6 @@ function createSchemaProxy(realSchema) {
                 throw new Error(`GET type<${typeName}>.${prop.toString()}`);
             }
           },
-          set(target, prop, value, receiver) {
-            throw new Error(`SET type.${prop}`);
-          },
           getPrototypeOf() {
             return realType.constructor.prototype;
           },
@@ -316,9 +310,6 @@ function createSchemaProxy(realSchema) {
   }
 
   return new Proxy(realSchema, {
-    has(target, prop) {
-      throw new Error(`HAS schema.${prop}`);
-    },
     get(target, prop, receiver) {
       switch (prop) {
         case '__isProxy':
