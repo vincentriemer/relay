@@ -57,7 +57,11 @@ function createScalarTypeProxy(wrappedType) {
           case Symbol.toPrimitive:
             return undefined;
           case 'toString':
-            return () => 'NonConstructableProxy';
+            return wrappedType.toString;
+          case 'name':
+            return wrappedType.name;
+          case 'toJSON':
+            return wrappedType.toJSON;
           case 'constructor':
             return wrappedType.constructor;
           case 'parseLiteral':
@@ -65,7 +69,7 @@ function createScalarTypeProxy(wrappedType) {
           case Symbol.hasInstance:
             return obj => obj instanceof wrappedType;
         }
-        throw new Error(`GET NonConstructableProxy.${String(prop)}`);
+        throw new Error(`GET ScalareTypeProxy.${String(prop)}`);
       },
       getPrototypeOf() {
         return wrappedType.constructor.prototype;
@@ -233,6 +237,18 @@ function createSchemaProxy(realSchema) {
   }
 
   function createTypeProxyFromRealType(realType) {
+    switch (realType.name) {
+      case 'Int':
+        return GraphQLInt;
+      case 'Float':
+        return GraphQLFloat;
+      case 'String':
+        return GraphQLString;
+      case 'Boolean':
+        return GraphQLBoolean;
+      case 'ID':
+        return GraphQLID;
+    }
     if (realType instanceof graphql.GraphQLNonNull) {
       return createNonNullTypeProxy(
         createTypeProxyFromRealType(realType.ofType),
@@ -299,6 +315,8 @@ function createSchemaProxy(realSchema) {
                     .map(interfaceType =>
                       createTypeProxyFromRealType(interfaceType),
                     );
+              case 'parseLiteral':
+                return ast => realSchema.getType(typeName).parseLiteral(ast);
               case 'asymmetricMatch':
               case Symbol.for('util.inspect.custom'):
               case require('util').inspect.custom:
