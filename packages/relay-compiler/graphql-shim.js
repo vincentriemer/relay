@@ -40,16 +40,56 @@ const GraphQLNonNull = new Proxy(function() {}, {
   },
 });
 
+const GraphQLInt = createScalarTypeProxy(graphql.GraphQLInt);
+const GraphQLFloat = createScalarTypeProxy(graphql.GraphQLFloat);
+const GraphQLString = createScalarTypeProxy(graphql.GraphQLString);
+const GraphQLBoolean = createScalarTypeProxy(graphql.GraphQLBoolean);
+const GraphQLID = createScalarTypeProxy(graphql.GraphQLID);
+
+function createScalarTypeProxy(wrappedType) {
+  return new Proxy(
+    {},
+    {
+      get(target, prop) {
+        switch (prop) {
+          case '__isProxy':
+            return true;
+          case Symbol.toPrimitive:
+            return undefined;
+          case 'toString':
+            return () => 'NonConstructableProxy';
+          case 'constructor':
+            return wrappedType.constructor;
+          case 'parseLiteral':
+            return wrappedType.parseLiteral;
+          case Symbol.hasInstance:
+            return obj => obj instanceof wrappedType;
+        }
+        throw new Error(`GET NonConstructableProxy.${String(prop)}`);
+      },
+      getPrototypeOf() {
+        return wrappedType.constructor.prototype;
+      },
+    },
+  );
+}
+
 function createNonConstructableProxy(wrappedType) {
   return new Proxy(
     {},
     {
       get(target, prop) {
         switch (prop) {
+          case '__isProxy':
+            return true;
+          case Symbol.toPrimitive:
+            return undefined;
+          case 'toString':
+            return () => 'NonConstructableProxy';
           case Symbol.hasInstance:
             return obj => obj instanceof wrappedType;
         }
-        throw new Error(`GET NonConstructableProxy.${prop}`);
+        throw new Error(`GET NonConstructableProxy.${String(prop)}`);
       },
     },
   );
@@ -75,6 +115,7 @@ function createNonNullTypeProxy(typeProxy) {
           case 'asymmetricMatch':
           case require('util').inspect.custom:
           case Symbol.toStringTag:
+          case 'toJSON':
             return undefined;
           default:
             throw new Error(`GET nonnull.${prop.toString()}`);
@@ -205,6 +246,18 @@ function createSchemaProxy(realSchema) {
 
   const typeProxyCache = new Map();
   function createTypeProxy(typeName) {
+    switch (typeName) {
+      case 'Int':
+        return GraphQLInt;
+      case 'Float':
+        return GraphQLFloat;
+      case 'String':
+        return GraphQLString;
+      case 'Boolean':
+        return GraphQLBoolean;
+      case 'ID':
+        return GraphQLID;
+    }
     if (typeName == null) {
       throw new Error('createTypeProxy called with null/undef');
     }
@@ -226,8 +279,6 @@ function createSchemaProxy(realSchema) {
               case 'toJSON':
               case 'toString':
                 return () => typeName;
-              case 'parseLiteral':
-                return realSchema.getType(typeName).parseLiteral;
               case 'getFields':
                 return () => createFieldMapProxy(typeName);
               case 'name':
@@ -260,15 +311,10 @@ function createSchemaProxy(realSchema) {
             }
           },
           set(target, prop, value, receiver) {
-            console.log(`SET schema.${prop}`);
+            throw new Error(`SET type.${prop}`);
           },
           getPrototypeOf() {
-            try {
-              return realSchema.getType(typeName).constructor.prototype;
-            } catch (e) {
-              console.log('ERROR FOR', typeName);
-              return {};
-            }
+            return realSchema.getType(typeName).constructor.prototype;
           },
         },
       );
@@ -357,6 +403,12 @@ module.exports = new Proxy(
     GraphQLEnumType: createNonConstructableProxy(graphql.GraphQLEnumType),
     GraphQLUnionType: createNonConstructableProxy(graphql.GraphQLUnionType),
 
+    GraphQLInt,
+    GraphQLFloat,
+    GraphQLString,
+    GraphQLBoolean,
+    GraphQLID,
+
     GraphQLError: graphql.GraphQLError,
     Source: graphql.Source,
 
@@ -382,7 +434,6 @@ module.exports = new Proxy(
     TypeMetaFieldDef: graphql.TypeMetaFieldDef,
     TypeNameMetaFieldDef: graphql.TypeNameMetaFieldDef,
 
-    GraphQLID: graphql.GraphQLID,
     GraphQLList: graphql.GraphQLList,
     GraphQLInputObjectType: graphql.GraphQLInputObjectType,
     GraphQLInterfaceType: graphql.GraphQLInterfaceType,
