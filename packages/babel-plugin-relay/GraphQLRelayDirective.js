@@ -11,7 +11,7 @@
 
 'use strict';
 
-const {buildSchema} = require('graphql-shim');
+const {buildSchema} = require('graphql');
 
 // Copy of RelayRelayDirectiveTransform.SCHEMA_EXTENSION due to the build
 // systems.

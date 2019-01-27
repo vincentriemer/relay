@@ -34,7 +34,7 @@ const {
   PossibleFragmentSpreadsRule,
   ValuesOfCorrectTypeRule,
   VariablesInAllowedPositionRule,
-} = require('graphql-shim');
+} = require('graphql');
 
 import type {RelayQLDefinition} from './RelayQLAST';
 import type {Printable, Substitution} from './RelayQLPrinter';

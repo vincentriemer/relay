@@ -14,7 +14,7 @@ const crypto = require('crypto');
 const invariant = require('./invariant');
 const path = require('path');
 
-const {print} = require('graphql-shim');
+const {print} = require('graphql');
 
 const GENERATED = './__generated__/';
 
