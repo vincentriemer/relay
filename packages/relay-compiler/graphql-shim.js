@@ -148,8 +148,11 @@ function createListProxy(typeProxy) {
             return graphql.GraphQLList;
           case 'ofType':
             return typeProxy;
+          case 'toJSON':
           case 'toString':
             return () => `[${typeProxy}]`;
+          case Symbol.toPrimitive:
+            return undefined;
           default:
             throw new Error(`GET list.${prop.toString()}`);
         }
