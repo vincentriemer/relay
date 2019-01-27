@@ -323,6 +323,9 @@ function createSchemaProxy(realSchema) {
                     );
               case 'parseLiteral':
                 return ast => realSchema.getType(typeName).parseLiteral(ast);
+              case 'getValues':
+                // enum values
+                return () => realSchema.getType(typeName).getValues();
               case 'asymmetricMatch':
               case Symbol.for('util.inspect.custom'):
               case require('util').inspect.custom:
@@ -366,6 +369,8 @@ function createSchemaProxy(realSchema) {
           return () => createTypeProxy('Query');
         case 'getMutationType':
           return () => createTypeProxy('Mutation');
+        case 'getSubscriptionType':
+          return () => createTypeProxy('Subscription');
         case 'getPossibleTypes':
           return abstractType => {
             return realSchema
