@@ -218,8 +218,6 @@ function createSchemaProxy(realSchema) {
   }
 
   function createFieldMapProxy(typeName) {
-    const realType = realSchema.getType(typeName);
-    const realFields = realType.getFields();
     const map = {};
     schemaDB.getFields(typeName).forEach(fieldSpec => {
       map[fieldSpec.name] = createFieldProxy(fieldSpec);
@@ -274,6 +272,32 @@ function createSchemaProxy(realSchema) {
         return createListProxy(createTypeProxyFromJSON(def.ofType));
       default:
         throw new Error(`unhandled kind: ${def.kind}`);
+    }
+  }
+
+  function createTypeProxyFromAST(ast) {
+    switch (ast.kind) {
+      case 'NamedType':
+        switch (ast.name) {
+          case 'Int':
+            return GraphQLInt;
+          case 'Float':
+            return GraphQLFloat;
+          case 'String':
+            return GraphQLString;
+          case 'Boolean':
+            return GraphQLBoolean;
+          case 'ID':
+            return GraphQLID;
+          default:
+            return createTypeProxy(ast.name.value);
+        }
+      case 'NonNullType':
+        return createNonNullTypeProxy(createTypeProxyFromAST(ast.type));
+      case 'ListType':
+        return createListProxy(createTypeProxyFromAST(ast.type));
+      default:
+        throw new Error(`unhandled kind: ${ast.kind}`);
     }
   }
 
@@ -357,8 +381,8 @@ function createSchemaProxy(realSchema) {
       switch (prop) {
         case '__isProxy':
           return true;
-        case '__createTypeProxyFromRealType':
-          return createTypeProxyFromRealType;
+        case 'typeFromAST':
+          return ast => createTypeProxyFromAST(ast);
         case '__realSchema':
           return realSchema;
         case 'getType':
@@ -402,9 +426,7 @@ function buildASTSchema(ast, options) {
 }
 
 function typeFromAST(schema, ast) {
-  return schema.__createTypeProxyFromRealType(
-    graphql.typeFromAST(schema.__realSchema, ast),
-  );
+  return schema.typeFromAST(ast);
 }
 
 function extendSchema(schema, ast, options) {
