@@ -153,6 +153,14 @@ class DBSchema {
     return fields;
   }
 
+  getKind(typeName: string) {
+    return this.types[typeName].kind;
+  }
+
+  hasType(typeName: string) {
+    return this.types[typeName] != null;
+  }
+
   getDirectives() {
     return this.directives;
   }

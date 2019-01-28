@@ -29,6 +29,25 @@ function assertProxy(thing) {
   }
 }
 
+function getConstructorForKind(kind) {
+  switch (kind) {
+    case 'object':
+      return graphql.GraphQLObjectType;
+    case 'interface':
+      return graphql.GraphQLInterfaceType;
+    case 'union':
+      return graphql.GraphQLUnionType;
+    case 'inputobject':
+      return graphql.GraphQLInputObjectType;
+    case 'enum':
+      return graphql.GraphQLEnumType;
+    case 'scalar':
+      return graphql.GraphQLScalarType;
+    default:
+      throw new Error(`unhandled kind ${kind}`);
+  }
+}
+
 const GraphQLNonNull = new Proxy(function() {}, {
   get(target, prop) {
     switch (prop) {
@@ -197,14 +216,6 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createFieldMapProxy(typeName) {
-    const map = {};
-    schemaDB.getFields(typeName).forEach(fieldSpec => {
-      map[fieldSpec.name] = createFieldProxy(fieldSpec);
-    });
-    return map;
-  }
-
   function createTypeProxyFromJSON(def) {
     switch (def.kind) {
       case 'named':
@@ -244,57 +255,73 @@ function createSchemaProxy(realSchema) {
     }
     let result = typeProxyCache.get(typeName);
     if (result == null) {
-      const realType = realSchema.getType(typeName);
-      if (realType == null) {
-        return null;
+      if (!schemaDB.hasType(typeName)) {
+        result = undefined;
+      } else {
+        result = new Proxy(
+          {},
+          {
+            get(target, prop, receiver) {
+              switch (prop) {
+                case '__isProxy':
+                  return true;
+                case 'constructor':
+                  return getConstructorForKind(schemaDB.getKind(typeName));
+                case 'toJSON':
+                case 'toString':
+                  return () => typeName;
+                case 'getFields':
+                  return () => {
+                    const map = {};
+                    schemaDB.getFields(typeName).forEach(fieldSpec => {
+                      map[fieldSpec.name] = createFieldProxy(fieldSpec);
+                    });
+                    return map;
+                  };
+                case 'name':
+                  return typeName;
+                case 'getInterfaces':
+                  return () =>
+                    schemaDB
+                      .getObjectInterfaces(typeName)
+                      .map(interfaceName => createTypeProxy(interfaceName));
+                case 'getTypes':
+                  return () =>
+                    schemaDB
+                      .getUnionTypes(typeName)
+                      .map(name => createTypeProxy(name));
+                case 'parseLiteral':
+                  return ast => {
+                    if (ast.kind === 'EnumValue') {
+                      const allowedValues = schemaDB.getEnumValues(typeName);
+                      return allowedValues.includes(ast.value)
+                        ? ast.value
+                        : undefined;
+                    }
+                    // TODO doesn't seem right, but no test fails
+                    return undefined;
+                  };
+                case 'getValues':
+                  return () =>
+                    schemaDB.getEnumValues(typeName).map(value => ({value}));
+                case 'asymmetricMatch':
+                case Symbol.for('util.inspect.custom'):
+                case require('util').inspect.custom:
+                case Symbol.toStringTag:
+                case Symbol.iterator:
+                case Symbol.toPrimitive:
+                  return undefined;
+                default:
+                  throw new Error(`GET type<${typeName}>.${prop.toString()}`);
+              }
+            },
+            getPrototypeOf() {
+              return getConstructorForKind(schemaDB.getKind(typeName))
+                .prototype;
+            },
+          },
+        );
       }
-      result = new Proxy(
-        {},
-        {
-          get(target, prop, receiver) {
-            switch (prop) {
-              case '__isProxy':
-                return true;
-              case 'constructor':
-                return realType.constructor;
-              case 'toJSON':
-              case 'toString':
-                return () => typeName;
-              case 'getFields':
-                return () => createFieldMapProxy(typeName);
-              case 'name':
-                return typeName;
-              case 'getInterfaces':
-                return () =>
-                  schemaDB
-                    .getObjectInterfaces(typeName)
-                    .map(interfaceName => createTypeProxy(interfaceName));
-              case 'getTypes':
-                return () =>
-                  schemaDB
-                    .getUnionTypes(typeName)
-                    .map(name => createTypeProxy(name));
-              case 'parseLiteral':
-                return ast => realType.parseLiteral(ast);
-              case 'getValues':
-                return () =>
-                  schemaDB.getEnumValues(typeName).map(value => ({value}));
-              case 'asymmetricMatch':
-              case Symbol.for('util.inspect.custom'):
-              case require('util').inspect.custom:
-              case Symbol.toStringTag:
-              case Symbol.iterator:
-              case Symbol.toPrimitive:
-                return undefined;
-              default:
-                throw new Error(`GET type<${typeName}>.${prop.toString()}`);
-            }
-          },
-          getPrototypeOf() {
-            return realType.constructor.prototype;
-          },
-        },
-      );
       typeProxyCache.set(typeName, result);
     }
     return result;
