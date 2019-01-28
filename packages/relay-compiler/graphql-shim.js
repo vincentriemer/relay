@@ -210,20 +210,7 @@ function createSchemaProxy(realSchema) {
   function createTypeProxyFromJSON(def) {
     switch (def.kind) {
       case 'named':
-        switch (def.name) {
-          case 'Int':
-            return GraphQLInt;
-          case 'Float':
-            return GraphQLFloat;
-          case 'String':
-            return GraphQLString;
-          case 'Boolean':
-            return GraphQLBoolean;
-          case 'ID':
-            return GraphQLID;
-          default:
-            return createTypeProxy(def.name);
-        }
+        return createTypeProxy(def.name);
       case 'nonnull':
         return createNonNullTypeProxy(createTypeProxyFromJSON(def.ofType));
       case 'list':
@@ -236,20 +223,7 @@ function createSchemaProxy(realSchema) {
   function createTypeProxyFromAST(ast) {
     switch (ast.kind) {
       case 'NamedType':
-        switch (ast.name) {
-          case 'Int':
-            return GraphQLInt;
-          case 'Float':
-            return GraphQLFloat;
-          case 'String':
-            return GraphQLString;
-          case 'Boolean':
-            return GraphQLBoolean;
-          case 'ID':
-            return GraphQLID;
-          default:
-            return createTypeProxy(ast.name.value);
-        }
+        return createTypeProxy(ast.name.value);
       case 'NonNullType':
         return createNonNullTypeProxy(createTypeProxyFromAST(ast.type));
       case 'ListType':
@@ -259,20 +233,14 @@ function createSchemaProxy(realSchema) {
     }
   }
 
-  const typeProxyCache = new Map();
+  const typeProxyCache = new Map([
+    ['Int', GraphQLInt],
+    ['Float', GraphQLFloat],
+    ['String', GraphQLString],
+    ['Boolean', GraphQLBoolean],
+    ['ID', GraphQLID],
+  ]);
   function createTypeProxy(typeName) {
-    switch (typeName) {
-      case 'Int':
-        return GraphQLInt;
-      case 'Float':
-        return GraphQLFloat;
-      case 'String':
-        return GraphQLString;
-      case 'Boolean':
-        return GraphQLBoolean;
-      case 'ID':
-        return GraphQLID;
-    }
     if (typeName == null) {
       throw new Error('createTypeProxy called with null/undef');
     }
