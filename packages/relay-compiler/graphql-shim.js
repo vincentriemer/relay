@@ -207,9 +207,7 @@ function createSchemaProxy(realSchema) {
             case 'name':
               return directiveSpec.name;
             default:
-              throw new Error(
-                `GET directive<${direcdirectiveSpec.name}>.${prop}`,
-              );
+              throw new Error(`GET directive<${directiveSpec.name}>.${prop}`);
           }
         },
       },
@@ -327,6 +325,12 @@ function createSchemaProxy(realSchema) {
     return result;
   }
 
+  const directivesMap = new Map(
+    schemaDB
+      .getDirectives()
+      .map(spec => [spec.name, createDirectiveProxy(spec)]),
+  );
+
   return new Proxy(realSchema, {
     get(target, prop, receiver) {
       switch (prop) {
@@ -348,18 +352,9 @@ function createSchemaProxy(realSchema) {
           return abstractType =>
             schemaDB.getPossibleTypes(abstractType.name).map(createTypeProxy);
         case 'getDirective':
-          return directiveName => {
-            const spec = schemaDB
-              .getDirectives()
-              .find(spec => spec.name === directiveName);
-            if (spec) {
-              return createDirectiveProxy(spec);
-            }
-            return undefined;
-          };
+          return directiveName => directivesMap.get(directiveName);
         case 'getDirectives':
-          return () =>
-            schemaDB.getDirectives().map(spec => createDirectiveProxy(spec));
+          return () => Array.from(directivesMap.values());
         case '__validationErrors':
           return target[prop];
         default:
