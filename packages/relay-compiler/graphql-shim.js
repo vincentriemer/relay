@@ -194,22 +194,12 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createFieldProxy(spec) {
-    return new Proxy(
-      {},
-      {
-        get(target, prop, receiver) {
-          switch (prop) {
-            case 'type':
-              return createTypeProxyFromJSON(spec.type);
-            case 'args':
-              return spec.args.map(argSpec => createArgProxyFromSpec(argSpec));
-            case 'name':
-              return spec.name;
-          }
-        },
-      },
-    );
+  function createField(fieldSpec) {
+    return {
+      type: createTypeProxyFromJSON(fieldSpec.type),
+      args: fieldSpec.args.map(argSpec => createArgProxyFromSpec(argSpec)),
+      name: fieldSpec.name,
+    };
   }
 
   function createTypeProxyFromJSON(def) {
@@ -262,7 +252,7 @@ function createSchemaProxy(realSchema) {
         getFields: memoize0(() => {
           const map = {};
           schemaDB.getFields(typeName).forEach(fieldSpec => {
-            map[fieldSpec.name] = createFieldProxy(fieldSpec);
+            map[fieldSpec.name] = createField(fieldSpec);
           });
           return map;
         }),
