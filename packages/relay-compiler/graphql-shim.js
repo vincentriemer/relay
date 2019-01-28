@@ -86,7 +86,7 @@ function createNonNullTypeProxy(typeProxy) {
             return typeProxy;
           case 'toJSON':
           case 'toString':
-            return () => `${typeProxy}!`;
+            return () => `${String(typeProxy)}!`;
           case Symbol.iterator:
           case Symbol.toPrimitive:
           case 'asymmetricMatch':
@@ -118,7 +118,7 @@ function createListProxy(typeProxy) {
             return typeProxy;
           case 'toJSON':
           case 'toString':
-            return () => `[${typeProxy}]`;
+            return () => `[${String(typeProxy)}]`;
           case Symbol.toPrimitive:
             return undefined;
           default:
@@ -189,7 +189,7 @@ function createSchemaProxy(realSchema) {
             case 'name':
               return spec.name;
             default:
-              throw new Error(`GET field<${typeName}.${fieldName}>.${prop}`);
+              throw new Error(`GET field<${spec.name}>.${prop}`);
           }
         },
       },
