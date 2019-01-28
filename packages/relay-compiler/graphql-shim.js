@@ -102,6 +102,7 @@ function createNonNullTypeProxy(typeProxy) {
 }
 
 function createListProxy(typeProxy) {
+  assertProxy(typeProxy);
   return new Proxy(
     {},
     {
