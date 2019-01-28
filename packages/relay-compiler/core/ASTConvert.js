@@ -17,7 +17,7 @@ const {
   isExecutableDefinitionAST,
   isSchemaDefinitionAST,
 } = require('./GraphQLSchemaUtils');
-const {extendSchema, parse, print, visit} = require('graphql-shim');
+const {extendSchema, parse, print, visit} = require('../graphql-shim');
 
 import type {Fragment, Root} from './GraphQLIR';
 import type {

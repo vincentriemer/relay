@@ -18,6 +18,7 @@ const {
   GraphQLBoolean,
   GraphQLID,
 } = require('./shim/scalars');
+const {dbForSchema} = require('./shim/db');
 
 function assertProxy(thing) {
   if (thing == null) {
@@ -132,6 +133,7 @@ function createListProxy(typeProxy) {
 }
 
 function createSchemaProxy(realSchema) {
+  const schemaDB = dbForSchema(realSchema);
   function createArgProxy(realArg) {
     return new Proxy(
       {},
@@ -152,8 +154,27 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createFieldProxy(typeName, fieldName) {
-    const realField = realSchema.getType(typeName).getFields()[fieldName];
+  function createArgProxyFromSpec(argSpec) {
+    return new Proxy(
+      {},
+      {
+        get(target, prop, receiver) {
+          switch (prop) {
+            case '__isProxy':
+              return true;
+            case 'name':
+              return argSpec.name;
+            case 'type':
+              return createTypeProxyFromJSON(argSpec.type);
+            default:
+              throw new Error(`GET arg.${prop}`);
+          }
+        },
+      },
+    );
+  }
+
+  function createFieldProxy(spec) {
     return new Proxy(
       {},
       {
@@ -162,11 +183,11 @@ function createSchemaProxy(realSchema) {
             case '__isProxy':
               return true;
             case 'type':
-              return createTypeProxyFromRealType(realField.type);
+              return createTypeProxyFromJSON(spec.type);
             case 'args':
-              return realField.args.map(arg => createArgProxy(arg));
+              return spec.args.map(argSpec => createArgProxyFromSpec(argSpec));
             case 'name':
-              return fieldName;
+              return spec.name;
             default:
               throw new Error(`GET field<${typeName}.${fieldName}>.${prop}`);
           }
@@ -200,9 +221,9 @@ function createSchemaProxy(realSchema) {
     const realType = realSchema.getType(typeName);
     const realFields = realType.getFields();
     const map = {};
-    for (const fieldName in realFields) {
-      map[fieldName] = createFieldProxy(typeName, fieldName);
-    }
+    schemaDB.getFields(typeName).forEach(fieldSpec => {
+      map[fieldSpec.name] = createFieldProxy(fieldSpec);
+    });
     return map;
   }
 
@@ -228,6 +249,32 @@ function createSchemaProxy(realSchema) {
       return createListProxy(createTypeProxyFromRealType(realType.ofType));
     }
     return createTypeProxy(realType.name);
+  }
+
+  function createTypeProxyFromJSON(def) {
+    switch (def.kind) {
+      case 'named':
+        switch (def.name) {
+          case 'Int':
+            return GraphQLInt;
+          case 'Float':
+            return GraphQLFloat;
+          case 'String':
+            return GraphQLString;
+          case 'Boolean':
+            return GraphQLBoolean;
+          case 'ID':
+            return GraphQLID;
+          default:
+            return createTypeProxy(def.name);
+        }
+      case 'nonnull':
+        return createNonNullTypeProxy(createTypeProxyFromJSON(def.ofType));
+      case 'list':
+        return createListProxy(createTypeProxyFromJSON(def.ofType));
+      default:
+        throw new Error(`unhandled kind: ${def.kind}`);
+    }
   }
 
   const typeProxyCache = new Map();
@@ -271,23 +318,19 @@ function createSchemaProxy(realSchema) {
                 return typeName;
               case 'getInterfaces':
                 return () =>
-                  realType
-                    .getInterfaces()
-                    .map(interfaceType =>
-                      createTypeProxyFromRealType(interfaceType),
-                    );
+                  schemaDB
+                    .getObjectInterfaces(typeName)
+                    .map(interfaceName => createTypeProxy(interfaceName));
               case 'getTypes':
                 return () =>
-                  realType
-                    .getTypes()
-                    .map(interfaceType =>
-                      createTypeProxyFromRealType(interfaceType),
-                    );
+                  schemaDB
+                    .getUnionTypes(typeName)
+                    .map(name => createTypeProxy(name));
               case 'parseLiteral':
                 return ast => realType.parseLiteral(ast);
               case 'getValues':
-                // enum values
-                return () => realType.getValues();
+                return () =>
+                  schemaDB.getEnumValues(typeName).map(value => ({value}));
               case 'asymmetricMatch':
               case Symbol.for('util.inspect.custom'):
               case require('util').inspect.custom:
@@ -327,18 +370,13 @@ function createSchemaProxy(realSchema) {
         case 'getSubscriptionType':
           return () => createTypeProxy('Subscription');
         case 'getPossibleTypes':
-          return abstractType => {
-            return realSchema
-              .getPossibleTypes(abstractType)
-              .map(realType => createTypeProxyFromRealType(realType));
-          };
+          return abstractType =>
+            schemaDB.getPossibleTypes(abstractType.name).map(createTypeProxy);
         case 'getDirective':
           return createDirectiveProxy;
         case 'getDirectives':
           return () =>
-            realSchema
-              .getDirectives()
-              .map(directive => createDirectiveProxy(directive.name));
+            schemaDB.getDirectives().map(def => createDirectiveProxy(def.name));
         case '__validationErrors':
           return target[prop];
         default:
