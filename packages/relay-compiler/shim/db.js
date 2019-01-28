@@ -18,7 +18,7 @@ const fs = require('fs');
 const sqlite = require('better-sqlite3');
 const invariant = require('invariant');
 
-const DB_DIR = '/tmp/graphqlite-3-' + Date.now();
+const DB_DIR = '/tmp/graphqlite-7';
 
 const ALWAYS_CREATE = true;
 
@@ -33,27 +33,27 @@ function hashSchema(schema) {
     .digest('hex');
 }
 
-function typeToJSON(type) {
+function typeToString(type) {
   if (type instanceof graphql.GraphQLList) {
-    return {kind: 'list', ofType: typeToJSON(type.ofType)};
+    return '[' + typeToString(type.ofType) + ']';
   } else if (type instanceof graphql.GraphQLNonNull) {
-    return {kind: 'nonnull', ofType: typeToJSON(type.ofType)};
+    return typeToString(type.ofType) + '!';
   } else {
-    return {kind: 'named', name: type.name};
+    return type.name;
   }
 }
 
 function createDB(dbFile, schema) {
   const types = {};
   function getFieldDefs(type) {
-    return Object.values(type.getFields()).map(field => ({
-      name: field.name,
-      type: typeToJSON(field.type),
-      args: (field.args || []).map(arg => ({
-        name: arg.name,
-        type: typeToJSON(arg.type),
-      })),
-    }));
+    return Object.values(type.getFields()).map(field => {
+      if (field.args && field.args.length > 0) {
+        const args = field.args.map(arg => [arg.name, typeToString(arg.type)]);
+        return [field.name, typeToString(field.type), args];
+      } else {
+        return [field.name, typeToString(field.type)];
+      }
+    });
   }
   for (const [typeName, type] of Object.entries(schema.getTypeMap())) {
     if (type instanceof graphql.GraphQLEnumType) {
@@ -92,18 +92,19 @@ function createDB(dbFile, schema) {
     }
   }
 
-  const directives = schema.getDirectives().map(directive => ({
-    name: directive.name,
-    args: directive.args.map(arg => ({
-      name: arg.name,
-      type: typeToJSON(arg.type),
-    })),
-  }));
+  const directives = schema
+    .getDirectives()
+    .map(directive => [
+      directive.name,
+      directive.args.map(arg => [arg.name, typeToString(arg.type)]),
+    ]);
 
   const db = {
     types,
     directives,
   };
+
+  //   console.log(types.User.fields);
   fs.writeFileSync(dbFile, JSON.stringify(db, null, 2), 'utf8');
 }
 

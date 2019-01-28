@@ -174,7 +174,7 @@ function createListProxy(typeProxy) {
 function createSchemaProxy(realSchema) {
   const schemaDB = dbForSchema(realSchema);
 
-  function createArgProxyFromSpec(argSpec) {
+  function createArgProxyFromSpec([name, type]) {
     return new Proxy(
       {},
       {
@@ -183,9 +183,9 @@ function createSchemaProxy(realSchema) {
             case '__isProxy':
               return true;
             case 'name':
-              return argSpec.name;
+              return name;
             case 'type':
-              return createTypeProxyFromJSON(argSpec.type);
+              return createTypeProxyFromJSON(type);
             default:
               throw new Error(`GET arg.${prop}`);
           }
@@ -194,25 +194,16 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createField(fieldSpec) {
+  function createField([name, type, args]) {
     return {
-      type: createTypeProxyFromJSON(fieldSpec.type),
-      args: fieldSpec.args.map(argSpec => createArgProxyFromSpec(argSpec)),
-      name: fieldSpec.name,
+      type: createTypeProxyFromJSON(type),
+      args: args ? args.map(argSpec => createArgProxyFromSpec(argSpec)) : [],
+      name: name,
     };
   }
 
   function createTypeProxyFromJSON(def) {
-    switch (def.kind) {
-      case 'named':
-        return createTypeProxy(def.name);
-      case 'nonnull':
-        return createNonNullTypeProxy(createTypeProxyFromJSON(def.ofType));
-      case 'list':
-        return createListProxy(createTypeProxyFromJSON(def.ofType));
-      default:
-        throw new Error(`unhandled kind: ${def.kind}`);
-    }
+    return createTypeProxyFromAST(graphql.parseType(def));
   }
 
   function createTypeProxyFromAST(ast) {
@@ -252,7 +243,7 @@ function createSchemaProxy(realSchema) {
         getFields: memoize0(() => {
           const map = {};
           schemaDB.getFields(typeName).forEach(fieldSpec => {
-            map[fieldSpec.name] = createField(fieldSpec);
+            map[fieldSpec[0]] = createField(fieldSpec);
           });
           return map;
         }),
@@ -301,11 +292,11 @@ function createSchemaProxy(realSchema) {
   });
 
   const directivesMap = new Map(
-    schemaDB.getDirectives().map(spec => [
-      spec.name,
+    schemaDB.getDirectives().map(([name, args]) => [
+      name,
       {
-        args: spec.args.map(arg => createArgProxyFromSpec(arg)),
-        name: spec.name,
+        name,
+        args: args.map(arg => createArgProxyFromSpec(arg)),
       },
     ]),
   );
@@ -371,6 +362,15 @@ function extendSchema(schema, ast, options) {
 function validate() {
   // TODO
 }
+
+// buildASTSchema(
+//   graphql.parse(
+//     require('fs').readFileSync(
+//       '/Users/jkassens/Code/relay/intern-schema.graphql',
+//       'utf8',
+//     ),
+//   ),
+// );
 
 module.exports = new Proxy(
   {
