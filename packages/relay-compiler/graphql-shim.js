@@ -134,25 +134,6 @@ function createListProxy(typeProxy) {
 
 function createSchemaProxy(realSchema) {
   const schemaDB = dbForSchema(realSchema);
-  function createArgProxy(realArg) {
-    return new Proxy(
-      {},
-      {
-        get(target, prop, receiver) {
-          switch (prop) {
-            case '__isProxy':
-              return true;
-            case 'name':
-              return realArg.name;
-            case 'type':
-              return createTypeProxyFromRealType(realArg.type);
-            default:
-              throw new Error(`GET arg.${prop}`);
-          }
-        },
-      },
-    );
-  }
 
   function createArgProxyFromSpec(argSpec) {
     return new Proxy(
@@ -196,8 +177,7 @@ function createSchemaProxy(realSchema) {
     );
   }
 
-  function createDirectiveProxy(directiveName) {
-    const realDirective = realSchema.getDirective(directiveName);
+  function createDirectiveProxy(directiveSpec) {
     return new Proxy(
       {},
       {
@@ -206,11 +186,13 @@ function createSchemaProxy(realSchema) {
             case '__isProxy':
               return true;
             case 'args':
-              return realDirective.args.map(arg => createArgProxy(arg));
+              return directiveSpec.args.map(arg => createArgProxyFromSpec(arg));
             case 'name':
-              return realDirective.name;
+              return directiveSpec.name;
             default:
-              throw new Error(`GET directive<${directiveName}>.${prop}`);
+              throw new Error(
+                `GET directive<${direcdirectiveSpec.name}>.${prop}`,
+              );
           }
         },
       },
@@ -223,30 +205,6 @@ function createSchemaProxy(realSchema) {
       map[fieldSpec.name] = createFieldProxy(fieldSpec);
     });
     return map;
-  }
-
-  function createTypeProxyFromRealType(realType) {
-    switch (realType.name) {
-      case 'Int':
-        return GraphQLInt;
-      case 'Float':
-        return GraphQLFloat;
-      case 'String':
-        return GraphQLString;
-      case 'Boolean':
-        return GraphQLBoolean;
-      case 'ID':
-        return GraphQLID;
-    }
-    if (realType instanceof graphql.GraphQLNonNull) {
-      return createNonNullTypeProxy(
-        createTypeProxyFromRealType(realType.ofType),
-      );
-    }
-    if (realType instanceof graphql.GraphQLList) {
-      return createListProxy(createTypeProxyFromRealType(realType.ofType));
-    }
-    return createTypeProxy(realType.name);
   }
 
   function createTypeProxyFromJSON(def) {
@@ -397,10 +355,18 @@ function createSchemaProxy(realSchema) {
           return abstractType =>
             schemaDB.getPossibleTypes(abstractType.name).map(createTypeProxy);
         case 'getDirective':
-          return createDirectiveProxy;
+          return directiveName => {
+            const spec = schemaDB
+              .getDirectives()
+              .find(spec => spec.name === directiveName);
+            if (spec) {
+              return createDirectiveProxy(spec);
+            }
+            return undefined;
+          };
         case 'getDirectives':
           return () =>
-            schemaDB.getDirectives().map(def => createDirectiveProxy(def.name));
+            schemaDB.getDirectives().map(spec => createDirectiveProxy(spec));
         case '__validationErrors':
           return target[prop];
         default:

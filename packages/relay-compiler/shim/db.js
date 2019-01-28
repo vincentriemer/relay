@@ -94,6 +94,10 @@ function createDB(dbFile, schema) {
 
   const directives = schema.getDirectives().map(directive => ({
     name: directive.name,
+    args: directive.args.map(arg => ({
+      name: arg.name,
+      type: typeToJSON(arg.type),
+    })),
   }));
 
   const db = {
