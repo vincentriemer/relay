@@ -29,6 +29,28 @@ function assertProxy(thing) {
   }
 }
 
+function memoize0(fn) {
+  let computed = false;
+  let result;
+  return () => {
+    if (!computed) {
+      computed = true;
+      result = fn();
+    }
+    return result;
+  };
+}
+
+function memoize1(fn) {
+  let results = new Map();
+  return arg => {
+    if (!results.has(arg)) {
+      results.set(arg, fn(arg));
+    }
+    return results.get(arg);
+  };
+}
+
 function getConstructorForKind(kind) {
   switch (kind) {
     case 'object':
@@ -178,36 +200,12 @@ function createSchemaProxy(realSchema) {
       {
         get(target, prop, receiver) {
           switch (prop) {
-            case '__isProxy':
-              return true;
             case 'type':
               return createTypeProxyFromJSON(spec.type);
             case 'args':
               return spec.args.map(argSpec => createArgProxyFromSpec(argSpec));
             case 'name':
               return spec.name;
-            default:
-              throw new Error(`GET field<${spec.name}>.${prop}`);
-          }
-        },
-      },
-    );
-  }
-
-  function createDirectiveProxy(directiveSpec) {
-    return new Proxy(
-      {},
-      {
-        get(target, prop, receiver) {
-          switch (prop) {
-            case '__isProxy':
-              return true;
-            case 'args':
-              return directiveSpec.args.map(arg => createArgProxyFromSpec(arg));
-            case 'name':
-              return directiveSpec.name;
-            default:
-              throw new Error(`GET directive<${directiveSpec.name}>.${prop}`);
           }
         },
       },
@@ -240,95 +238,86 @@ function createSchemaProxy(realSchema) {
     }
   }
 
-  const typeProxyCache = new Map([
+  const scalarTypes = new Map([
     ['Int', GraphQLInt],
     ['Float', GraphQLFloat],
     ['String', GraphQLString],
     ['Boolean', GraphQLBoolean],
     ['ID', GraphQLID],
   ]);
-  function createTypeProxy(typeName) {
+  const createTypeProxy = memoize1(typeName => {
     if (typeName == null) {
       throw new Error('createTypeProxy called with null/undef');
     }
-    let result = typeProxyCache.get(typeName);
-    if (result == null) {
-      if (!schemaDB.hasType(typeName)) {
-        result = undefined;
-      } else {
-        result = new Proxy(
-          {},
-          {
-            get(target, prop, receiver) {
-              switch (prop) {
-                case '__isProxy':
-                  return true;
-                case 'constructor':
-                  return getConstructorForKind(schemaDB.getKind(typeName));
-                case 'toJSON':
-                case 'toString':
-                  return () => typeName;
-                case 'getFields':
-                  return () => {
-                    const map = {};
-                    schemaDB.getFields(typeName).forEach(fieldSpec => {
-                      map[fieldSpec.name] = createFieldProxy(fieldSpec);
-                    });
-                    return map;
-                  };
-                case 'name':
-                  return typeName;
-                case 'getInterfaces':
-                  return () =>
-                    schemaDB
-                      .getObjectInterfaces(typeName)
-                      .map(interfaceName => createTypeProxy(interfaceName));
-                case 'getTypes':
-                  return () =>
-                    schemaDB
-                      .getUnionTypes(typeName)
-                      .map(name => createTypeProxy(name));
-                case 'parseLiteral':
-                  return ast => {
-                    if (ast.kind === 'EnumValue') {
-                      const allowedValues = schemaDB.getEnumValues(typeName);
-                      return allowedValues.includes(ast.value)
-                        ? ast.value
-                        : undefined;
-                    }
-                    // TODO doesn't seem right, but no test fails
-                    return undefined;
-                  };
-                case 'getValues':
-                  return () =>
-                    schemaDB.getEnumValues(typeName).map(value => ({value}));
-                case 'asymmetricMatch':
-                case Symbol.for('util.inspect.custom'):
-                case require('util').inspect.custom:
-                case Symbol.toStringTag:
-                case Symbol.iterator:
-                case Symbol.toPrimitive:
-                  return undefined;
-                default:
-                  throw new Error(`GET type<${typeName}>.${prop.toString()}`);
-              }
-            },
-            getPrototypeOf() {
-              return getConstructorForKind(schemaDB.getKind(typeName))
-                .prototype;
-            },
-          },
-        );
-      }
-      typeProxyCache.set(typeName, result);
+    const scalarType = scalarTypes.get(typeName);
+    if (scalarType != null) {
+      return scalarType;
     }
-    return result;
-  }
+    if (!schemaDB.hasType(typeName)) {
+      return undefined;
+    }
+    return new Proxy(
+      {
+        constructor: getConstructorForKind(schemaDB.getKind(typeName)),
+        getFields: memoize0(() => {
+          const map = {};
+          schemaDB.getFields(typeName).forEach(fieldSpec => {
+            map[fieldSpec.name] = createFieldProxy(fieldSpec);
+          });
+          return map;
+        }),
+        getInterfaces: memoize0(() =>
+          schemaDB
+            .getObjectInterfaces(typeName)
+            .map(interfaceName => createTypeProxy(interfaceName)),
+        ),
+        getTypes: memoize0(() =>
+          schemaDB.getUnionTypes(typeName).map(name => createTypeProxy(name)),
+        ),
+        parseLiteral: ast => {
+          if (ast.kind === 'EnumValue') {
+            const allowedValues = schemaDB.getEnumValues(typeName);
+            return allowedValues.includes(ast.value) ? ast.value : undefined;
+          }
+          // TODO doesn't seem right, but no test fails
+          return undefined;
+        },
+        getValues: memoize0(() =>
+          schemaDB.getEnumValues(typeName).map(value => ({value})),
+        ),
+        toJSON: () => typeName,
+        toString: () => typeName,
+        __isProxy: true,
+        name: typeName,
+        asymmetricMatch: undefined,
+        [Symbol.for('util.inspect.custom')]: undefined,
+        [require('util').inspect.custom]: undefined,
+        [Symbol.toStringTag]: undefined,
+        [Symbol.iterator]: undefined,
+        [Symbol.toPrimitive]: undefined,
+      },
+      {
+        get(target, prop, receiver) {
+          if (target.hasOwnProperty(prop)) {
+            return target[prop];
+          }
+          throw new Error(`GET type<${typeName}>.${prop.toString()}`);
+        },
+        getPrototypeOf() {
+          return getConstructorForKind(schemaDB.getKind(typeName)).prototype;
+        },
+      },
+    );
+  });
 
   const directivesMap = new Map(
-    schemaDB
-      .getDirectives()
-      .map(spec => [spec.name, createDirectiveProxy(spec)]),
+    schemaDB.getDirectives().map(spec => [
+      spec.name,
+      {
+        args: spec.args.map(arg => createArgProxyFromSpec(arg)),
+        name: spec.name,
+      },
+    ]),
   );
 
   return new Proxy(realSchema, {
