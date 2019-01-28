@@ -489,11 +489,6 @@ class GraphQLDefinitionParser {
         effectiveType = new GraphQLNonNull(getNullableType(effectiveType));
       }
       if (!isTypeSubTypeOf(this._schema, effectiveType, usedAsType)) {
-        console.log(
-          'variableDefinition.type',
-          variableDefinition.type.__isProxy,
-        );
-        console.log('usedAsType', usedAsType.__isProxy);
         throw createUserError(
           `Variable '\$${name}' was defined as type '${String(
             variableDefinition.type,
