@@ -13,6 +13,7 @@
 const createClassicNode = require('./createClassicNode');
 const createCompatNode = require('./createCompatNode');
 const createModernNode = require('./createModernNode');
+const getTopScope = require('./getTopScope');
 
 import type {BabelState} from './BabelPluginRelay';
 import type {DocumentNode} from 'graphql';
@@ -59,7 +60,7 @@ function createAST(t, state, path, graphqlDefinition) {
   const isDevelopment =
     (process.env.BABEL_ENV || process.env.NODE_ENV) !== 'production';
 
-  const modernNode = createModernNode(t, graphqlDefinition, state, {
+  const modernNode = createModernNode(t, path, graphqlDefinition, state, {
     artifactDirectory,
     buildCommand,
     isDevelopment,
@@ -77,10 +78,7 @@ function createAST(t, state, path, graphqlDefinition) {
 }
 
 function replaceMemoized(t, path, ast) {
-  let topScope = path.scope;
-  while (topScope.parent) {
-    topScope = topScope.parent;
-  }
+  const topScope = getTopScope(path);
 
   if (path.scope === topScope) {
     path.replaceWith(ast);

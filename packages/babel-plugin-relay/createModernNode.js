@@ -13,6 +13,7 @@
 const crypto = require('crypto');
 const invariant = require('./invariant');
 const path = require('path');
+const getTopScope = require('./getTopScope');
 
 const {print} = require('graphql');
 
@@ -27,6 +28,7 @@ import type {BabelState} from './BabelPluginRelay';
  */
 function createModernNode(
   t: $FlowFixMe,
+  path: *,
   graphqlDefinition: OperationDefinitionNode | FragmentDefinitionNode,
   state: BabelState,
   options: {
@@ -58,23 +60,32 @@ function createModernNode(
     .update(print(graphqlDefinition), 'utf8')
     .digest('hex');
 
-  const requireGraphQLModule = t.callExpression(t.identifier('require'), [
+  const topScope = getTopScope(path);
+  const nodeVariable = topScope.generateUidIdentifier(definitionName);
+  const nodeDotHash = t.memberExpression(nodeVariable, t.identifier('hash'));
+  const importDefaultSpecifier = t.importNamespaceSpecifier(nodeVariable);
+  const importDeclaration = t.importDeclaration(
+    [importDefaultSpecifier],
     t.stringLiteral(requiredPath),
-  ]);
+  );
+  topScope.path.unshiftContainer('body', importDeclaration);
 
-  const bodyStatements = [t.returnStatement(requireGraphQLModule)];
+  const bodyStatements = [t.returnStatement(nodeVariable)];
   if (options.isDevVariable != null || options.isDevelopment) {
-    const nodeVariable = t.identifier('node');
-    const nodeDotHash = t.memberExpression(nodeVariable, t.identifier('hash'));
+    const localNodeVariable = topScope.generateUidIdentifier(definitionName);
+    const localNodeDotHash = t.memberExpression(
+      localNodeVariable,
+      t.identifier('hash'),
+    );
     let checkStatements = [
       t.variableDeclaration('const', [
-        t.variableDeclarator(nodeVariable, requireGraphQLModule),
+        t.variableDeclarator(localNodeVariable, nodeVariable),
       ]),
       t.ifStatement(
         t.logicalExpression(
           '&&',
-          nodeDotHash,
-          t.binaryExpression('!==', nodeDotHash, t.stringLiteral(hash)),
+          localNodeDotHash,
+          t.binaryExpression('!==', localNodeDotHash, t.stringLiteral(hash)),
         ),
         t.blockStatement([
           t.expressionStatement(

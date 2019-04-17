@@ -49,6 +49,10 @@ module.exports = RelayCompatContainer.createContainer(CompatProfilePic, {
  */
 'use strict';
 
+import * as _CompatProfile_receivingGlobals from "./__generated__/CompatProfile_receivingGlobals.graphql";
+import * as _CompatProfile_receiving from "./__generated__/CompatProfile_receiving.graphql";
+import * as _CompatProfile_passing from "./__generated__/CompatProfile_passing.graphql";
+
 const RelayCompatContainer = require('RelayCompatContainer');
 
 const graphql = require('graphql');
@@ -57,13 +61,13 @@ const CompatProfilePic = () => null;
 
 module.exports = RelayCompatContainer.createContainer(CompatProfilePic, {
   passing: function () {
-    return require("./__generated__/CompatProfile_passing.graphql");
+    return _CompatProfile_passing;
   },
   receiving: function () {
-    return require("./__generated__/CompatProfile_receiving.graphql");
+    return _CompatProfile_receiving;
   },
   receivingGlobals: function () {
-    return require("./__generated__/CompatProfile_receivingGlobals.graphql");
+    return _CompatProfile_receivingGlobals;
   }
 });
 `;
@@ -104,6 +108,8 @@ module.exports = RelayClassic.createFragmentContainer(CompatProfile, {
  */
 'use strict';
 
+import * as _CompatProfile_viewer from "./__generated__/CompatProfile_viewer.graphql";
+
 const RelayClassic = require('react-relay/classic');
 
 const {
@@ -114,7 +120,7 @@ const CompatProfile = () => null;
 
 module.exports = RelayClassic.createFragmentContainer(CompatProfile, {
   viewer: function () {
-    return require("./__generated__/CompatProfile_viewer.graphql");
+    return _CompatProfile_viewer;
   }
 });
 `;
@@ -161,6 +167,9 @@ module.exports = RelayCompatContainer.createContainer(CompatProfilePic, {
  */
 'use strict';
 
+import * as _CompatProfile_user2 from "./__generated__/CompatProfile_user2.graphql";
+import * as _CompatProfile_user from "./__generated__/CompatProfile_user.graphql";
+
 const RelayCompatContainer = require('RelayCompatContainer');
 
 const graphql = require('graphql');
@@ -169,10 +178,10 @@ const CompatProfilePic = () => null;
 
 module.exports = RelayCompatContainer.createContainer(CompatProfilePic, {
   user: function () {
-    return require("./__generated__/CompatProfile_user.graphql");
+    return _CompatProfile_user;
   },
   user2: function () {
-    return require("./__generated__/CompatProfile_user2.graphql");
+    return _CompatProfile_user2;
   }
 });
 `;
@@ -311,6 +320,9 @@ module.exports = createRefetchContainer(
 );
 
 ~~~~~~~~~~ OUTPUT ~~~~~~~~~~
+import * as _RefetchExampleRefetchQuery from "./__generated__/RefetchExampleRefetchQuery.graphql";
+import * as _RefetchExample_user from "./__generated__/RefetchExample_user.graphql";
+
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
@@ -331,10 +343,10 @@ class RefetchExample extends React.Component {
 
 module.exports = createRefetchContainer(RefetchExample, {
   user: function () {
-    return require("./__generated__/RefetchExample_user.graphql");
+    return _RefetchExample_user;
   }
 }, function () {
-  return require("./__generated__/RefetchExampleRefetchQuery.graphql");
+  return _RefetchExampleRefetchQuery;
 });
 `;
 
@@ -369,6 +381,8 @@ module.exports = RelayCompatContainer.createContainer(CompatProfile, {
  */
 'use strict';
 
+import * as _CompatProfile_user from "./__generated__/CompatProfile_user.graphql";
+
 const CompatProfilePic = require('CompatProfilePic');
 
 const RelayCompatContainer = require('RelayCompatContainer');
@@ -379,7 +393,7 @@ const CompatProfile = () => null;
 
 module.exports = RelayCompatContainer.createContainer(CompatProfile, {
   user: function () {
-    return require("./__generated__/CompatProfile_user.graphql");
+    return _CompatProfile_user;
   }
 });
 `;
@@ -424,13 +438,15 @@ function SomeTopLevelView() {
 
 var _graphql2;
 
+import * as _ExampleQuery from "./__generated__/ExampleQuery.graphql";
+
 const ProfilePic = require('ProfilePic');
 
 function SomeTopLevelView() {
   let _graphql = 'unrelated';
   return <View>
       <QueryRenderer environment={RelayStore} query={_graphql2 || (_graphql2 = function () {
-      return require("./__generated__/ExampleQuery.graphql");
+      return _ExampleQuery;
     })} variables={{
       id: '12345'
     }} />
@@ -470,12 +486,14 @@ const CompatCommentCreateMutation = graphql\`
  */
 'use strict';
 
+import * as _CompatCommentCreateMutation from "./__generated__/CompatCommentCreateMutation.graphql";
+
 const graphql = require('graphql');
 
 const CompatProfilePic = require('CompatProfilePic');
 
 const CompatCommentCreateMutation = function () {
-  return require("./__generated__/CompatCommentCreateMutation.graphql");
+  return _CompatCommentCreateMutation;
 };
 `;
 
@@ -515,12 +533,14 @@ const CompatViewerQuery = graphql\`
  */
 'use strict';
 
+import * as _CompatViewerQuery from "./__generated__/CompatViewerQuery.graphql";
+
 const graphql = require('graphql');
 
 const CompatProfilePic = require('CompatProfilePic');
 
 const CompatViewerQuery = function () {
-  return require("./__generated__/CompatViewerQuery.graphql");
+  return _CompatViewerQuery;
 };
 `;
 
@@ -556,12 +576,14 @@ const CompatCommentCreateMutation = graphql\`
  */
 'use strict';
 
+import * as _CompatCommentCreateMutation from "./__generated__/CompatCommentCreateMutation.graphql";
+
 const graphql = require('graphql');
 
 const CompatProfilePic = require('CompatProfilePic');
 
 const CompatCommentCreateMutation = function () {
-  return require("./__generated__/CompatCommentCreateMutation.graphql");
+  return _CompatCommentCreateMutation;
 };
 `;
 
@@ -594,6 +616,8 @@ module.exports = RelayCompatContainer.createContainer(CompatProfile, {
  */
 'use strict';
 
+import * as _CompatProfile_user from "./__generated__/CompatProfile_user.graphql";
+
 const RelayCompatContainer = require('RelayCompatContainer');
 
 const graphql = require('graphql');
@@ -602,7 +626,7 @@ const CompatProfile = () => null;
 
 module.exports = RelayCompatContainer.createContainer(CompatProfile, {
   user: function () {
-    return require("./__generated__/CompatProfile_user.graphql");
+    return _CompatProfile_user;
   }
 });
 `;
@@ -637,12 +661,14 @@ const CompatViewerQuery = graphql\`
  */
 'use strict';
 
+import * as _CompatViewerQuery from "./__generated__/CompatViewerQuery.graphql";
+
 const graphql = require('graphql');
 
 const CompatProfilePic = require('CompatProfilePic');
 
 const CompatViewerQuery = function () {
-  return require("./__generated__/CompatViewerQuery.graphql");
+  return _CompatViewerQuery;
 };
 `;
 
@@ -704,6 +730,9 @@ module.exports = createFragmentContainer(CompatProfile, {
 
 var _graphql;
 
+import * as _CompatProfile_actor from "./__generated__/CompatProfile_actor.graphql";
+import * as _ActorSubscribe from "./__generated__/ActorSubscribe.graphql";
+
 const {
   createFragmentContainer,
   graphql
@@ -724,7 +753,7 @@ class CompatProfile extends React.Component {
 
   doSomething() {
     commitMutation(this.props.relay, _graphql || (_graphql = function () {
-      return require("./__generated__/ActorSubscribe.graphql");
+      return _ActorSubscribe;
     }), {
       input: {
         subscribeeId: 123
@@ -736,7 +765,7 @@ class CompatProfile extends React.Component {
 
 module.exports = createFragmentContainer(CompatProfile, {
   actor: function () {
-    return require("./__generated__/CompatProfile_actor.graphql");
+    return _CompatProfile_actor;
   }
 });
 `;
