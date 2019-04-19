@@ -80,9 +80,9 @@ const flowBabelOptions = getBabelOptions({
   env: 'development',
   moduleMap: moduleMap,
   plugins: [
-    '@babel/plugin-proposal-nullish-coalescing-operator',
-    '@babel/plugin-proposal-optional-catch-binding',
-    '@babel/plugin-proposal-optional-chaining'
+    '@babel/plugin-syntax-nullish-coalescing-operator',
+    '@babel/plugin-syntax-optional-catch-binding',
+    '@babel/plugin-syntax-optional-chaining'
   ],
   target: 'flow'
 });
@@ -95,7 +95,8 @@ const babelOptions = getBabelOptions({
     '@babel/plugin-transform-runtime',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     '@babel/plugin-proposal-optional-catch-binding',
-    '@babel/plugin-proposal-optional-chaining'
+    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-transform-spread'
   ],
   postPlugins: [
     '@babel/plugin-transform-async-to-generator',

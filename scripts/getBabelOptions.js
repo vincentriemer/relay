@@ -50,7 +50,8 @@ module.exports = function(options) {
   }
 
   return {
-    plugins: options.plugins.concat('@babel/plugin-transform-spread'),
+    plugins: options.plugins,
     presets: [fbjsPreset],
+    retainLines: options.target === "flow"
   };
 };
