@@ -1,5 +1,5 @@
 {
-  "name": "react-relay",
+  "name": "@vincentriemer/react-relay",
   "description": "A framework for building GraphQL-driven React applications.",
   "version": "3.0.0",
   "keywords": [

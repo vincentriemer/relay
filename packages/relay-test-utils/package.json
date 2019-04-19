@@ -1,5 +1,5 @@
 {
-  "name": "relay-test-utils",
+  "name": "@vincentriemer/relay-test-utils",
   "description": "Utilities for testing Relay applications.",
   "version": "3.0.0",
   "keywords": [
