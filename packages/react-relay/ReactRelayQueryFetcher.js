@@ -15,7 +15,7 @@ const invariant = require('invariant');
 const {
   isRelayModernEnvironment,
   __internal: {fetchQuery},
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 import type {
   CacheConfig,
@@ -24,7 +24,7 @@ import type {
   Observable,
   OperationDescriptor,
   Snapshot,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type OnDataChange = ({error?: Error, snapshot?: Snapshot}) => void;
 

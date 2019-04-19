@@ -17,7 +17,7 @@ const {
   createOperationDescriptor,
 } = require('../../store/RelayModernOperationDescriptor');
 const {ROOT_ID} = require('../../store/RelayStoreUtils');
-const {createMockEnvironment, generateAndCompile} = require('relay-test-utils');
+const {createMockEnvironment, generateAndCompile} = require('@vincentriemer/relay-test-utils');
 
 describe('requestRelaySubscription-test', () => {
   it('Config: `RANGE_ADD`', () => {

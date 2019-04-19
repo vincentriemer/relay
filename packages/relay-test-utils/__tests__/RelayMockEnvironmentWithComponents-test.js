@@ -25,12 +25,12 @@ const {
   createFragmentContainer,
   createPaginationContainer,
   createRefetchContainer,
-} = require('react-relay');
+} = require('@vincentriemer/react-relay');
 const {
   commitMutation,
   requestSubscription,
   DefaultHandlerProvider,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 const {useState, useEffect} = React;
 

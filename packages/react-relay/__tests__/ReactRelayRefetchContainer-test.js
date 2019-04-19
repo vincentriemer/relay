@@ -17,13 +17,13 @@ const ReactTestRenderer = require('ReactTestRenderer');
 
 const readContext = require('../readContext');
 
-const {createOperationDescriptor, ROOT_ID} = require('relay-runtime');
+const {createOperationDescriptor, ROOT_ID} = require('@vincentriemer/relay-runtime');
 const {
   createMockEnvironment,
   matchers,
   generateAndCompile,
   unwrapContainer,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('ReactRelayRefetchContainer', () => {
   let TestComponent;

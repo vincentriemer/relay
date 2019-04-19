@@ -22,7 +22,7 @@ const formatGeneratedModule: FormatModule = ({
   sourceHash,
 }) => {
   const documentTypeImport = documentType
-    ? `import type { ${documentType} } from 'relay-runtime';`
+    ? `import type { ${documentType} } from '@vincentriemer/relay-runtime';`
     : '';
   const docTextComment = docText ? '\n/*\n' + docText.trim() + '\n*/\n' : '';
   const hashText = hash ? `\n * ${hash}` : '';

@@ -16,7 +16,7 @@ const ReactRelayQueryFetcher = require('./ReactRelayQueryFetcher');
 
 const areEqual = require('areEqual');
 
-const {deepFreeze} = require('relay-runtime');
+const {deepFreeze} = require('@vincentriemer/relay-runtime');
 
 import type {
   CacheConfig,
@@ -26,7 +26,7 @@ import type {
   RequestParameters,
   Snapshot,
   Variables,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type RetryCallbacks = {
   handleDataChange:

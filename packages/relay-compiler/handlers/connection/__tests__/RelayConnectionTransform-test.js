@@ -15,12 +15,12 @@ const GraphQLIRPrinter = require('../../../core/GraphQLIRPrinter');
 const RelayConnectionTransform = require('../RelayConnectionTransform');
 
 const {transformASTSchema} = require('../../../core/ASTConvert');
-const {RelayFeatureFlags} = require('relay-runtime');
+const {RelayFeatureFlags} = require('@vincentriemer/relay-runtime');
 const {
   TestSchema,
   generateTestsFromFixtures,
   parseGraphQLText,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayConnectionTransform', () => {
   let previousEnableIncrementalDelivery;

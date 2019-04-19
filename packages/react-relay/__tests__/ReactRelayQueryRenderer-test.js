@@ -25,13 +25,13 @@ const {
   RecordSource,
   Store,
   ROOT_ID,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 const {ROOT_TYPE} = require('relay-runtime/store/RelayStoreUtils');
 const {
   createMockEnvironment,
   generateAndCompile,
   simpleClone,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('ReactRelayQueryRenderer', () => {
   let TestQuery;

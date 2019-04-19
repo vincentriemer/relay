@@ -18,7 +18,7 @@ const getLiteralArgumentValues = require('../core/getLiteralArgumentValues');
 const {getNullableType} = require('../core/GraphQLSchemaUtils');
 const {createUserError} = require('../core/RelayCompilerError');
 const {GraphQLList} = require('graphql');
-const {RelayFeatureFlags} = require('relay-runtime');
+const {RelayFeatureFlags} = require('@vincentriemer/relay-runtime');
 
 const {INCREMENTAL_DELIVERY_VARIABLE_NAME: VARIABLE_NAME} = RelayFeatureFlags;
 

@@ -17,7 +17,7 @@ const nullthrows = require('nullthrows');
 const {
   createContainer: createFragmentContainer,
 } = require('../ReactRelayFragmentContainer');
-const {graphql} = require('relay-runtime');
+const {graphql} = require('@vincentriemer/relay-runtime');
 
 import type {$FragmentRef} from '../ReactRelayTypes';
 import type {RelayModernFlowtest_badref} from './RelayModernFlowtest_badref.graphql';

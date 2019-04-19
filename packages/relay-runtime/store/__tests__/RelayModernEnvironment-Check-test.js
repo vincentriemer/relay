@@ -17,7 +17,7 @@ const RelayModernOperationDescriptor = require('../RelayModernOperationDescripto
 const RelayModernStore = require('../RelayModernStore');
 const RelayNetwork = require('../../network/RelayNetwork');
 
-const {generateAndCompile} = require('relay-test-utils');
+const {generateAndCompile} = require('@vincentriemer/relay-test-utils');
 
 function createOperationDescriptor(...args) {
   const operation = RelayModernOperationDescriptor.createOperationDescriptor(

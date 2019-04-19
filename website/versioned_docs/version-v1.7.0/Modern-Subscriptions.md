@@ -91,7 +91,7 @@ Relay's in-memory cache when each subscription response is received. To do so,
 pass an `updater` function:
 
 ```javascript
-const {ConnectionHandler} = require('relay-runtime');
+const {ConnectionHandler} = require('@vincentriemer/relay-runtime');
 
 requestSubscription(
   environment,

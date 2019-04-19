@@ -15,7 +15,7 @@ const GraphQLIRPrinter = require('../../core/GraphQLIRPrinter');
 const RelayApplyFragmentArgumentTransform = require('../RelayApplyFragmentArgumentTransform');
 const RelayParser = require('../../core/RelayParser');
 
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayApplyFragmentArgumentTransform', () => {
   generateTestsFromFixtures(

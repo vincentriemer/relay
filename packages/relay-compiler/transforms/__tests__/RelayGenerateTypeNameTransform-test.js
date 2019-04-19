@@ -16,7 +16,7 @@ const InlineFragmentsTransform = require('../InlineFragmentsTransform');
 const RelayGenerateTypeNameTransform = require('../RelayGenerateTypeNameTransform');
 const RelayParser = require('../../core/RelayParser');
 
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayGenerateTypeNameTransform', () => {
   generateTestsFromFixtures(

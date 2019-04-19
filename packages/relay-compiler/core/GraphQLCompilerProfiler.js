@@ -85,14 +85,14 @@ const traces: Array<Trace> = [
     pid: 0,
     tid: 0,
     name: 'process_name',
-    args: {name: 'relay-compiler'},
+    args: {name: '@vincentriemer/relay-compiler'},
   },
   {
     ph: 'M',
     pid: 0,
     tid: 0,
     name: 'thread_name',
-    args: {name: 'relay-compiler'},
+    args: {name: '@vincentriemer/relay-compiler'},
   },
 ];
 const stack: Array<BeginDurationTrace> = [];

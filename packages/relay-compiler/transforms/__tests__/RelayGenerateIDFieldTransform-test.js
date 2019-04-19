@@ -15,7 +15,7 @@ const GraphQLIRPrinter = require('../../core/GraphQLIRPrinter');
 const RelayGenerateIDFieldTransform = require('../RelayGenerateIDFieldTransform');
 const RelayParser = require('../../core/RelayParser');
 
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayGenerateIDFieldTransform', () => {
   generateTestsFromFixtures(

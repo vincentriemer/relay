@@ -11,7 +11,7 @@
 'use strict';
 
 import type {Fragment, Request, Root, SplitOperation} from './GraphQLIR';
-import type {GeneratedNode} from 'relay-runtime';
+import type {GeneratedNode} from '@vincentriemer/relay-runtime';
 
 /**
  * Helpers to retieve the name of the document from which the input derives:

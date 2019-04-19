@@ -17,7 +17,7 @@ const {
   createUserError,
 } = require('../core/RelayCompilerError');
 const {GraphQLList} = require('graphql');
-const {getStorageKey, stableCopy} = require('relay-runtime');
+const {getStorageKey, stableCopy} = require('@vincentriemer/relay-runtime');
 
 import type {
   Argument,
@@ -39,7 +39,7 @@ import type {
   NormalizationSelection,
   NormalizationSplitOperation,
   NormalizationStream,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 const {getRawType, isAbstractType, getNullableType} = SchemaUtils;
 
 /**

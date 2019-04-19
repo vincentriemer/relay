@@ -43,7 +43,7 @@ import type {
   LocalArgumentDefinition,
   Root,
 } from '../core/GraphQLIR';
-import type {ReaderPaginationMetadata} from 'relay-runtime';
+import type {ReaderPaginationMetadata} from '@vincentriemer/relay-runtime';
 
 type RefetchRoot = {|
   path: $ReadOnlyArray<string>,

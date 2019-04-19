@@ -12,7 +12,7 @@
 
 const RelayFeatureFlags = require('../../util/RelayFeatureFlags');
 const RelayInMemoryRecordSource = require('../RelayInMemoryRecordSource');
-const RelayModernTestUtils = require('relay-test-utils');
+const RelayModernTestUtils = require('@vincentriemer/relay-test-utils');
 
 const {getRequest, createOperationDescriptor} = require('../RelayCore');
 const {read} = require('../RelayReader');

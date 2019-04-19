@@ -31,7 +31,7 @@ const {
   Observable,
   getFragmentOwners,
   isScalarAndEqual,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 import type {
   $RelayProps,
@@ -52,7 +52,7 @@ import type {
   RelayContext,
   Subscription,
   Variables,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type ContainerState = {
   data: {[key: string]: mixed},

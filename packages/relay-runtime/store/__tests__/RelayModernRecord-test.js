@@ -11,7 +11,7 @@
 'use strict';
 
 const RelayModernRecord = require('../RelayModernRecord');
-const RelayModernTestUtils = require('relay-test-utils');
+const RelayModernTestUtils = require('@vincentriemer/relay-test-utils');
 const RelayStoreUtils = require('../RelayStoreUtils');
 
 const deepFreeze = require('../../util/deepFreeze');

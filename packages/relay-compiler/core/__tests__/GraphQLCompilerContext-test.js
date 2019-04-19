@@ -24,7 +24,7 @@ describe('GraphQLCompilerContext', () => {
     jest.resetModules();
     GraphQLCompilerContext = require('../GraphQLCompilerContext');
     RelayParser = require('../RelayParser');
-    ({TestSchema, matchers} = require('relay-test-utils'));
+    ({TestSchema, matchers} = require('@vincentriemer/relay-test-utils'));
 
     expect.extend(matchers);
   });

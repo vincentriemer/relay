@@ -22,12 +22,12 @@ const {
   ConnectionInterface,
   RelayFeatureFlags,
   ROOT_ID,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 const {
   createMockEnvironment,
   generateAndCompile,
   matchers,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('ReactRelayPaginationContainer with fragment ownership', () => {
   let TestChildComponent;

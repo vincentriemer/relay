@@ -15,7 +15,7 @@ const ReactRelayContext = require('../ReactRelayContext');
 
 const invariant = require('invariant');
 
-import type {Variables, Snapshot} from 'relay-runtime';
+import type {Variables, Snapshot} from '@vincentriemer/relay-runtime';
 
 type Props = {
   environment: $FlowFixMe,

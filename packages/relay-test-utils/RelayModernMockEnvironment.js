@@ -22,11 +22,11 @@ const {
   Observable,
   Environment,
   Network,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
-import type {HandlerProvider} from 'relay-runtime/handlers/RelayDefaultHandlerProvider';
-import type {Sink} from 'relay-runtime/network/RelayObservable';
-import type {MissingFieldHandler} from 'relay-runtime/store/RelayStoreTypes';
+import type {HandlerProvider} from '@vincentriemer/relay-runtime/handlers/RelayDefaultHandlerProvider';
+import type {Sink} from '@vincentriemer/relay-runtime/network/RelayObservable';
+import type {MissingFieldHandler} from '@vincentriemer/relay-runtime/store/RelayStoreTypes';
 import type {
   RequestParameters,
   Variables,
@@ -35,7 +35,7 @@ import type {
   GraphQLResponse,
   IEnvironment,
   OperationDescriptor,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type PendingRequest = {|
   +request: RequestParameters,

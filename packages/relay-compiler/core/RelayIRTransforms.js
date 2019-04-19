@@ -34,7 +34,7 @@ const SkipClientFieldTransform = require('../transforms/SkipClientFieldTransform
 const SkipRedundantNodesTransform = require('../transforms/SkipRedundantNodesTransform');
 const SkipUnreachableNodeTransform = require('../transforms/SkipUnreachableNodeTransform');
 
-const {RelayFeatureFlags} = require('relay-runtime');
+const {RelayFeatureFlags} = require('@vincentriemer/relay-runtime');
 
 import type {IRTransform} from './GraphQLCompilerContext';
 

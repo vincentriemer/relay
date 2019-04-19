@@ -15,12 +15,12 @@ const ReactRelayContext = require('../ReactRelayContext');
 const ReactRelayFragmentContainer = require('../ReactRelayFragmentContainer');
 const ReactTestRenderer = require('ReactTestRenderer');
 
-const {createOperationDescriptor, RelayFeatureFlags} = require('relay-runtime');
+const {createOperationDescriptor, RelayFeatureFlags} = require('@vincentriemer/relay-runtime');
 const {
   createMockEnvironment,
   generateAndCompile,
   matchers,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('ReactRelayFragmentContainer with fragment ownerhsip', () => {
   let TestComponent;

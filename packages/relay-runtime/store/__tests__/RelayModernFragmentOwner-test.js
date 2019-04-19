@@ -17,7 +17,7 @@ const {
   getFragmentOwner,
   getFragmentOwners,
 } = require('../RelayModernFragmentOwner');
-const {createMockEnvironment, generateAndCompile} = require('relay-test-utils');
+const {createMockEnvironment, generateAndCompile} = require('@vincentriemer/relay-test-utils');
 const {getRequest, createOperationDescriptor} = require('../RelayCore');
 
 describe('RelayModernFragmentOwner', () => {

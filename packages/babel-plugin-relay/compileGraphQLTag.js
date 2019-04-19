@@ -54,7 +54,7 @@ function createAST(t, state, path, graphqlDefinition) {
   const isDevVariable = state.opts && state.opts.isDevVariable;
   const artifactDirectory = state.opts && state.opts.artifactDirectory;
   const buildCommand =
-    (state.opts && state.opts.buildCommand) || 'relay-compiler';
+    (state.opts && state.opts.buildCommand) || '@vincentriemer/relay-compiler';
 
   // Fallback is 'true'
   const isDevelopment =

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {FragmentReference} from 'relay-runtime';
+import type {FragmentReference} from '@vincentriemer/relay-runtime';
 declare export opaque type RelayModernFlowtest_users$ref: FragmentReference;
 export type RelayModernFlowtest_users = $ReadOnlyArray<{|
   +name: ?string,

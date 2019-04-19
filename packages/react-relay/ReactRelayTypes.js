@@ -17,7 +17,7 @@ import type {
   IEnvironment,
   Observer,
   Variables,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 export type GeneratedNodeMap = {[key: string]: GraphQLTaggedNode};
 

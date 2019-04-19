@@ -21,7 +21,7 @@ const RelayNetwork = require('../../network/RelayNetwork');
 const RelayObservable = require('../../network/RelayObservable');
 const RelayViewerHandler = require('../../handlers/viewer/RelayViewerHandler');
 
-const {generateAndCompile, matchers} = require('relay-test-utils');
+const {generateAndCompile, matchers} = require('@vincentriemer/relay-test-utils');
 
 const {VIEWER_ID} = RelayViewerHandler;
 

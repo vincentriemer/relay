@@ -21,7 +21,7 @@ const {
   createMockEnvironment,
   generateAndCompile,
   matchers,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayModernFragmentSpecResolver with fragment ownership', () => {
   let UserFragment;

@@ -15,7 +15,7 @@ const GraphQLIRPrinter = require('../../core/GraphQLIRPrinter');
 const RelayParser = require('../../core/RelayParser');
 const SkipRedundantNodesTransform = require('../SkipRedundantNodesTransform');
 
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 describe('SkipRedundantNodesTransform', () => {
   generateTestsFromFixtures(

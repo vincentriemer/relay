@@ -13,7 +13,7 @@
 const GraphQLCompilerContext = require('../GraphQLCompilerContext');
 const GraphQLIRTransformer = require('../GraphQLIRTransformer');
 
-const {TestSchema, parseGraphQLText} = require('relay-test-utils');
+const {TestSchema, parseGraphQLText} = require('@vincentriemer/relay-test-utils');
 
 describe('GraphQLIRTransformer', () => {
   it('visits all node types', () => {

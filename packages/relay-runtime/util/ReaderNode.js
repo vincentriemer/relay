@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ConcreteRequest} from './RelayConcreteNode';
-import type {ConnectionMetadata} from 'relay-runtime';
+import type {ConnectionMetadata} from '@vincentriemer/relay-runtime';
 
 export type ReaderFragmentSpread = {|
   +kind: 'FragmentSpread',

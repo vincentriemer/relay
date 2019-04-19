@@ -18,7 +18,7 @@ const {
   Network,
   RecordSource,
   Store,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 const source = new RecordSource();
 const store = new Store(source);
@@ -46,7 +46,7 @@ If you wish to provide your own `handlerProvider`, you can do so:
 const {
   ConnectionHandler,
   ViewerHandler,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 function handlerProvider(handle) {
   switch (handle) {

@@ -15,7 +15,7 @@ const RelayParser = require('../../core/RelayParser');
 const RelayRelayDirectiveTransform = require('../RelayRelayDirectiveTransform');
 
 const {transformASTSchema} = require('../../core/ASTConvert');
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayRelayDirectiveTransform', () => {
   generateTestsFromFixtures(

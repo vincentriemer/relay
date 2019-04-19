@@ -19,7 +19,7 @@ const getRelayHandleKey = require('../../util/getRelayHandleKey');
 
 const {check} = require('../DataChecker');
 const {ROOT_ID} = require('../RelayStoreUtils');
-const {generateAndCompile} = require('relay-test-utils');
+const {generateAndCompile} = require('@vincentriemer/relay-test-utils');
 
 beforeEach(() => {
   jest.resetModules();

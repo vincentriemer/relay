@@ -10,12 +10,12 @@
 
 'use strict';
 
-const {RelayConcreteNode} = require('relay-runtime');
+const {RelayConcreteNode} = require('@vincentriemer/relay-runtime');
 
 import type {IRTransform} from '../core/GraphQLCompilerContext';
 import type {Definition, Root, Fragment} from '../core/GraphQLIR';
 import type {ScalarTypeMapping} from './javascript/RelayFlowTypeTransformers';
-import type {GeneratedNode} from 'relay-runtime';
+import type {GeneratedNode} from '@vincentriemer/relay-runtime';
 
 /**
  * A language plugin allows relay-compiler to both read and write files for any

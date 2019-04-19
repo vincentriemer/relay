@@ -20,7 +20,7 @@ import type {
   ReaderFragment,
   ConcreteRequest,
   NormalizationSplitOperation,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 /**
  * @public

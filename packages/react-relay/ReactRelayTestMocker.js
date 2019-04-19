@@ -15,7 +15,7 @@ const emptyFunction = require('emptyFunction');
 const invariant = require('invariant');
 const warning = require('warning');
 
-const {Network, isRelayModernEnvironment} = require('relay-runtime');
+const {Network, isRelayModernEnvironment} = require('@vincentriemer/relay-runtime');
 
 import type {
   CacheConfig,
@@ -25,7 +25,7 @@ import type {
   PayloadError,
   RequestParameters,
   Variables,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 export type DataWriteConfig = {
   query: ConcreteRequest,

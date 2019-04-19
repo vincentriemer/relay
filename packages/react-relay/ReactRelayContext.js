@@ -14,6 +14,6 @@ const React = require('React');
 
 const {
   __internal: {createRelayContext},
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 module.exports = createRelayContext(React);

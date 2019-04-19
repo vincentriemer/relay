@@ -13,7 +13,7 @@
 
 const invariant = require('invariant');
 
-const {TYPENAME_KEY, RelayConcreteNode} = require('relay-runtime');
+const {TYPENAME_KEY, RelayConcreteNode} = require('@vincentriemer/relay-runtime');
 
 const {
   CONDITION,
@@ -36,7 +36,7 @@ import type {
   NormalizationScalarField,
   OperationDescriptor,
   GraphQLResponse,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type ValueResolver = (
   typeName: ?string,

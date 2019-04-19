@@ -13,7 +13,7 @@
 
 const isRelayEnvironment = require('../isRelayEnvironment');
 
-const {Environment} = require('relay-runtime');
+const {Environment} = require('@vincentriemer/relay-runtime');
 
 describe('isRelayEnvironment()', () => {
   it('returns true for `RelayEnvironment` instances', () => {

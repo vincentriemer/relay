@@ -11,10 +11,10 @@
 'use strict';
 
 const {extendSchema, parse} = require('graphql');
-const {Parser, convertASTDocuments} = require('relay-compiler');
+const {Parser, convertASTDocuments} = require('@vincentriemer/relay-compiler');
 
 import type {GraphQLSchema} from 'graphql';
-import type {Fragment, Root} from 'relay-compiler';
+import type {Fragment, Root} from '@vincentriemer/relay-compiler';
 
 function parseGraphQLText(
   schema: GraphQLSchema,

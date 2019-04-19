@@ -30,7 +30,7 @@ const {
   GraphQLUnionType,
   parse,
 } = require('graphql');
-const {ConnectionInterface, RelayFeatureFlags} = require('relay-runtime');
+const {ConnectionInterface, RelayFeatureFlags} = require('@vincentriemer/relay-runtime');
 
 const {INCREMENTAL_DELIVERY_VARIABLE_NAME: VARIABLE_NAME} = RelayFeatureFlags;
 
@@ -44,7 +44,7 @@ import type {
   Root,
   Selection,
 } from '../../core/GraphQLIR';
-import type {ConnectionMetadata} from 'relay-runtime';
+import type {ConnectionMetadata} from '@vincentriemer/relay-runtime';
 
 type Options = {
   // The current path

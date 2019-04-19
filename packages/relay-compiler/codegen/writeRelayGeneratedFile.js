@@ -18,12 +18,12 @@ const dedupeJSONStringify = require('../util/dedupeJSONStringify');
 const deepMergeAssignments = require('./deepMergeAssignments');
 const invariant = require('invariant');
 
-const {RelayConcreteNode} = require('relay-runtime');
+const {RelayConcreteNode} = require('@vincentriemer/relay-runtime');
 
 import type {Definition} from '../core/GraphQLIR';
 import type {FormatModule} from '../language/RelayLanguagePluginInterface';
 import type CodegenDirectory from './CodegenDirectory';
-import type {GeneratedNode} from 'relay-runtime';
+import type {GeneratedNode} from '@vincentriemer/relay-runtime';
 
 function printRequireModuleDependency(moduleName: string): string {
   return `require('${moduleName}')`;

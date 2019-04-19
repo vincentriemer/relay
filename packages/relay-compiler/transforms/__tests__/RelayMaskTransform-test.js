@@ -20,7 +20,7 @@ const {
   TestSchema,
   generateTestsFromFixtures,
   parseGraphQLText,
-} = require('relay-test-utils');
+} = require('@vincentriemer/relay-test-utils');
 
 describe('RelayMaskTransform', () => {
   const schema = transformASTSchema(TestSchema, [

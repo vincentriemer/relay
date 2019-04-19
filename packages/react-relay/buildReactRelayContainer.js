@@ -24,7 +24,7 @@ const {
 } = require('./ReactRelayContainerUtils');
 
 import type {GeneratedNodeMap} from './ReactRelayTypes';
-import type {FragmentMap} from 'relay-runtime';
+import type {FragmentMap} from '@vincentriemer/relay-runtime';
 
 type ContainerCreator = (
   Component: React$ComponentType<any>,
@@ -53,7 +53,7 @@ function buildReactRelayContainer<TBase: React$ComponentType<*>>(
     if (Container == null || props.__relayContext.environment !== environment) {
       environment = props.__relayContext.environment;
       if (__DEV__) {
-        const {isRelayModernEnvironment} = require('relay-runtime');
+        const {isRelayModernEnvironment} = require('@vincentriemer/relay-runtime');
         if (!isRelayModernEnvironment(environment)) {
           throw new Error(
             'RelayModernContainer: Can only use Relay Modern component ' +

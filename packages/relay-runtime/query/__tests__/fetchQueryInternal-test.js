@@ -15,8 +15,8 @@ const {
   fetchQuery,
   getPromiseForRequestInFlight,
 } = require('../fetchQueryInternal');
-const {createOperationDescriptor} = require('relay-runtime');
-const {createMockEnvironment, generateAndCompile} = require('relay-test-utils');
+const {createOperationDescriptor} = require('@vincentriemer/relay-runtime');
+const {createMockEnvironment, generateAndCompile} = require('@vincentriemer/relay-test-utils');
 
 const response = {
   data: {

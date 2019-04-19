@@ -15,7 +15,7 @@ const IRTransformer = require('../../core/GraphQLIRTransformer');
 
 const {getRawType} = require('../../core/GraphQLSchemaUtils');
 const {GraphQLObjectType} = require('graphql');
-const {DEFAULT_HANDLE_KEY} = require('relay-runtime');
+const {DEFAULT_HANDLE_KEY} = require('@vincentriemer/relay-runtime');
 
 import type {LinkedField} from '../../core/GraphQLIR';
 

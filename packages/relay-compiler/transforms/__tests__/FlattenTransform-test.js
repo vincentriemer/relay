@@ -17,7 +17,7 @@ const RelayMatchTransform = require('../../transforms/RelayMatchTransform');
 const RelayParser = require('../../core/RelayParser');
 const RelayRelayDirectiveTransform = require('../RelayRelayDirectiveTransform');
 
-const {TestSchema, generateTestsFromFixtures} = require('relay-test-utils');
+const {TestSchema, generateTestsFromFixtures} = require('@vincentriemer/relay-test-utils');
 
 import type {FlattenOptions} from '../FlattenTransform';
 

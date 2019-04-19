@@ -17,14 +17,14 @@ const buildReactRelayContainer = require('./buildReactRelayContainer');
 
 const {getContainerName} = require('./ReactRelayContainerUtils');
 const {assertRelayContext} = require('./RelayContext');
-const {isScalarAndEqual} = require('relay-runtime');
+const {isScalarAndEqual} = require('@vincentriemer/relay-runtime');
 
 import type {$RelayProps, GeneratedNodeMap, RelayProp} from './ReactRelayTypes';
 import type {
   FragmentMap,
   FragmentSpecResolver,
   RelayContext,
-} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
 
 type ContainerProps = $FlowFixMeProps;
 type ContainerState = {

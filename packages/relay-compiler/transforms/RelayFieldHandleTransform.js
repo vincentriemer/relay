@@ -15,7 +15,7 @@ const IRTransformer = require('../core/GraphQLIRTransformer');
 
 const invariant = require('invariant');
 
-const {getRelayHandleKey} = require('relay-runtime');
+const {getRelayHandleKey} = require('@vincentriemer/relay-runtime');
 
 import type {Field} from '../core/GraphQLIR';
 

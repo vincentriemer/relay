@@ -15,7 +15,7 @@ const React = require('React');
 const {
   createContainer: createRefetchContainer,
 } = require('../ReactRelayRefetchContainer');
-const {graphql} = require('relay-runtime');
+const {graphql} = require('@vincentriemer/relay-runtime');
 
 /**
  * Verifies that normal prop type checking works correctly on Relay components.

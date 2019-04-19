@@ -66,10 +66,10 @@ const moduleMap = {
   process: 'process',
   React: 'react',
   'react-lifecycles-compat': 'react-lifecycles-compat',
-  'relay-compiler': 'relay-compiler',
-  RelayRuntime: 'relay-runtime',
-  'relay-runtime': 'relay-runtime',
-  'relay-test-utils': 'relay-test-utils',
+  '@vincentriemer/relay-compiler': '@vincentriemer/relay-compiler',
+  RelayRuntime: '@vincentriemer/relay-runtime',
+  '@vincentriemer/relay-runtime': '@vincentriemer/relay-runtime',
+  '@vincentriemer/relay-test-utils': '@vincentriemer/relay-test-utils',
   signedsource: 'signedsource',
   util: 'util',
   yargs: 'yargs',
@@ -138,7 +138,7 @@ const PRODUCTION_HEADER = (isFlow) =>
 
 const buildDist = function(filename, opts, isProduction) {
   const webpackOpts = {
-    externals: [/^[-/a-zA-Z0-9]+$/],
+    externals: [/^[-/a-zA-Z0-9@]+$/],
     target: opts.target,
     node: {
       fs: 'empty',
@@ -161,12 +161,10 @@ const buildDist = function(filename, opts, isProduction) {
       new webpackStream.webpack.optimize.OccurrenceOrderPlugin(),
     ],
   };
-  if (isProduction && !opts.noMinify) {
-    // See more chunks configuration here: https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693
-    webpackOpts.optimization = {
-      minimize: true,
-    };
-  }
+  // See more chunks configuration here: https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693
+  webpackOpts.optimization = {
+    minimize: isProduction && !opts.noMinify,
+  };
   return webpackStream(webpackOpts, webpack, function(err, stats) {
     if (err) {
       throw new gulpUtil.PluginError('webpack', err);

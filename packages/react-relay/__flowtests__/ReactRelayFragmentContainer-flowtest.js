@@ -15,7 +15,7 @@ const React = require('React');
 const {
   createContainer: createFragmentContainer,
 } = require('../ReactRelayFragmentContainer');
-const {graphql} = require('relay-runtime');
+const {graphql} = require('@vincentriemer/relay-runtime');
 
 /**
  * Verifies that normal prop type checking, as well as the methods proxying Relay does, is

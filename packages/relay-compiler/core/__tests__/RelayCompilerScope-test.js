@@ -26,7 +26,7 @@ describe('scope', () => {
 
     GraphQL = require('graphql');
     RelayCompilerScope = require('../RelayCompilerScope');
-    ({TestSchema} = require('relay-test-utils'));
+    ({TestSchema} = require('@vincentriemer/relay-test-utils'));
 
     ({GraphQLNonNull} = GraphQL);
     ({getFragmentScope, getRootScope} = RelayCompilerScope);

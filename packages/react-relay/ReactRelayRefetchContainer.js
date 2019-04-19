@@ -25,7 +25,7 @@ const {
   RelayFeatureFlags,
   getFragmentOwners,
   isScalarAndEqual,
-} = require('relay-runtime');
+} = require('@vincentriemer/relay-runtime');
 
 import type {
   $RelayProps,
@@ -41,8 +41,8 @@ import type {
   RelayContext,
   Subscription,
   Variables,
-} from 'relay-runtime';
-import type {FragmentSpecResolver} from 'relay-runtime';
+} from '@vincentriemer/relay-runtime';
+import type {FragmentSpecResolver} from '@vincentriemer/relay-runtime';
 
 type ContainerProps = $FlowFixMeProps;
 

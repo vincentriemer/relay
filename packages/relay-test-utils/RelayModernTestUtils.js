@@ -181,7 +181,7 @@ function generateAndCompile(
   text: string,
   schema?: ?GraphQLSchema,
 ): {[key: string]: GeneratedNode} {
-  const {IRTransforms} = require('relay-compiler');
+  const {IRTransforms} = require('@vincentriemer/relay-compiler');
   const RelayTestSchema = require('./RelayTestSchema');
   return generate(text, schema || RelayTestSchema, IRTransforms);
 }
@@ -266,7 +266,7 @@ function generate(
     GraphQLCompilerContext,
     IRTransforms,
     transformASTSchema,
-  } = require('relay-compiler');
+  } = require('@vincentriemer/relay-compiler');
 
   const relaySchema = transformASTSchema(schema, IRTransforms.schemaExtensions);
   const compilerContext = new GraphQLCompilerContext(

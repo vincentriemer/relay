@@ -20,7 +20,7 @@ const RelayNetwork = require('../../network/RelayNetwork');
 const RelayObservable = require('../../network/RelayObservable');
 
 const {ROOT_ID} = require('../RelayStoreUtils');
-const {generateAndCompile, matchers} = require('relay-test-utils');
+const {generateAndCompile, matchers} = require('@vincentriemer/relay-test-utils');
 
 function createOperationDescriptor(...args) {
   const operation = RelayModernOperationDescriptor.createOperationDescriptor(

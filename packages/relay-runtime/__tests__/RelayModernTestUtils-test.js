@@ -10,7 +10,7 @@
 
 'use strict';
 
-const RelayModernTestUtils = require('relay-test-utils');
+const RelayModernTestUtils = require('@vincentriemer/relay-test-utils');
 
 describe('RelayModernTestUtils', () => {
   beforeEach(() => {
