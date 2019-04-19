@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-relay",
+  "name": "@vincentriemer/babel-plugin-relay",
   "description": "A Babel Plugin for use with Relay applications.",
   "version": "3.0.0",
   "keywords": [

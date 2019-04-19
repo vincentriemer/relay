@@ -1,5 +1,5 @@
 {
-  "name": "relay-runtime",
+  "name": "@vincentriemer/relay-runtime",
   "description": "A core runtime for building GraphQL-driven applications.",
   "version": "3.0.0",
   "keywords": [

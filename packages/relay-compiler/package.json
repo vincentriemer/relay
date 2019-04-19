@@ -1,5 +1,5 @@
 {
-  "name": "relay-compiler",
+  "name": "@vincentriemer/relay-compiler",
   "description": "A compiler tool for building GraphQL-driven applications.",
   "version": "3.0.0",
   "keywords": [
