@@ -10,83 +10,101 @@
 'use strict';
 
 const babel = require('gulp-babel');
-const babelOptions = require('./scripts/getBabelOptions')({
+const getBabelOptions = require('./scripts/getBabelOptions');
+
+const moduleMap = {
+  '@babel/core': '@babel/core',
+  '@babel/parser': '@babel/parser',
+  '@babel/polyfill': '@babel/polyfill',
+  '@babel/traverse': '@babel/traverse',
+  '@babel/types': '@babel/types',
+  '@babel/plugin-proposal-nullish-coalescing-operator':
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+  '@babel/plugin-proposal-optional-chaining':
+    '@babel/plugin-proposal-optional-chaining',
+  '@babel/plugin-transform-runtime': '@babel/plugin-transform-runtime',
+  '@babel/plugin-transform-flow-strip-types':
+    '@babel/plugin-transform-flow-strip-types',
+  '@babel/generator': '@babel/generator',
+  '@babel/generator/lib/printer': '@babel/generator/lib/printer',
+  '@babel/runtime/helpers/assertThisInitialized':
+    '@babel/runtime/helpers/assertThisInitialized',
+  '@babel/runtime/helpers/asyncToGenerator':
+    '@babel/runtime/helpers/asyncToGenerator',
+  '@babel/runtime/helpers/classCallCheck':
+    '@babel/runtime/helpers/classCallCheck',
+  '@babel/runtime/helpers/defineProperty':
+    '@babel/runtime/helpers/defineProperty',
+  '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
+  '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
+  '@babel/runtime/helpers/inheritsLoose':
+    '@babel/runtime/helpers/inheritsLoose',
+  '@babel/runtime/helpers/interopRequireDefault':
+    '@babel/runtime/helpers/interopRequireDefault',
+  '@babel/runtime/helpers/objectSpread':
+    '@babel/runtime/helpers/objectSpread',
+  '@babel/runtime/helpers/objectWithoutProperties':
+    '@babel/runtime/helpers/objectWithoutProperties',
+  '@babel/runtime/helpers/objectWithoutPropertiesLoose':
+    '@babel/runtime/helpers/objectWithoutPropertiesLoose',
+  '@babel/runtime/helpers/possibleConstructorReturn':
+    '@babel/runtime/helpers/possibleConstructorReturn',
+  '@babel/runtime/helpers/toConsumableArray':
+    '@babel/runtime/helpers/toConsumableArray',
+  'babel-plugin-macros': 'babel-plugin-macros',
+  chalk: 'chalk',
+  child_process: 'child_process',
+  crypto: 'crypto',
+  'fast-glob': 'fast-glob',
+  'fb-watchman': 'fb-watchman',
+  fs: 'fs',
+  graphql: 'graphql',
+  immutable: 'immutable',
+  net: 'net',
+  os: 'os',
+  path: 'path',
+  process: 'process',
+  React: 'react',
+  'react-lifecycles-compat': 'react-lifecycles-compat',
+  'relay-compiler': 'relay-compiler',
+  RelayRuntime: 'relay-runtime',
+  'relay-runtime': 'relay-runtime',
+  'relay-test-utils': 'relay-test-utils',
+  signedsource: 'signedsource',
+  util: 'util',
+  yargs: 'yargs',
+};
+
+const flowBabelOptions = getBabelOptions({
   ast: false,
-  moduleMap: {
-    '@babel/core': '@babel/core',
-    '@babel/parser': '@babel/parser',
-    '@babel/polyfill': '@babel/polyfill',
-    '@babel/traverse': '@babel/traverse',
-    '@babel/types': '@babel/types',
-    '@babel/plugin-proposal-nullish-coalescing-operator':
-      '@babel/plugin-proposal-nullish-coalescing-operator',
-    '@babel/plugin-proposal-optional-chaining':
-      '@babel/plugin-proposal-optional-chaining',
-    '@babel/plugin-transform-runtime': '@babel/plugin-transform-runtime',
-    '@babel/plugin-transform-flow-strip-types':
-      '@babel/plugin-transform-flow-strip-types',
-    '@babel/generator': '@babel/generator',
-    '@babel/generator/lib/printer': '@babel/generator/lib/printer',
-    '@babel/runtime/helpers/assertThisInitialized':
-      '@babel/runtime/helpers/assertThisInitialized',
-    '@babel/runtime/helpers/asyncToGenerator':
-      '@babel/runtime/helpers/asyncToGenerator',
-    '@babel/runtime/helpers/classCallCheck':
-      '@babel/runtime/helpers/classCallCheck',
-    '@babel/runtime/helpers/defineProperty':
-      '@babel/runtime/helpers/defineProperty',
-    '@babel/runtime/helpers/extends': '@babel/runtime/helpers/extends',
-    '@babel/runtime/helpers/inherits': '@babel/runtime/helpers/inherits',
-    '@babel/runtime/helpers/inheritsLoose':
-      '@babel/runtime/helpers/inheritsLoose',
-    '@babel/runtime/helpers/interopRequireDefault':
-      '@babel/runtime/helpers/interopRequireDefault',
-    '@babel/runtime/helpers/objectSpread':
-      '@babel/runtime/helpers/objectSpread',
-    '@babel/runtime/helpers/objectWithoutProperties':
-      '@babel/runtime/helpers/objectWithoutProperties',
-    '@babel/runtime/helpers/objectWithoutPropertiesLoose':
-      '@babel/runtime/helpers/objectWithoutPropertiesLoose',
-    '@babel/runtime/helpers/possibleConstructorReturn':
-      '@babel/runtime/helpers/possibleConstructorReturn',
-    '@babel/runtime/helpers/toConsumableArray':
-      '@babel/runtime/helpers/toConsumableArray',
-    'babel-plugin-macros': 'babel-plugin-macros',
-    chalk: 'chalk',
-    child_process: 'child_process',
-    crypto: 'crypto',
-    'fast-glob': 'fast-glob',
-    'fb-watchman': 'fb-watchman',
-    fs: 'fs',
-    graphql: 'graphql',
-    immutable: 'immutable',
-    net: 'net',
-    os: 'os',
-    path: 'path',
-    process: 'process',
-    React: 'react',
-    'react-lifecycles-compat': 'react-lifecycles-compat',
-    'relay-compiler': 'relay-compiler',
-    RelayRuntime: 'relay-runtime',
-    'relay-runtime': 'relay-runtime',
-    'relay-test-utils': 'relay-test-utils',
-    signedsource: 'signedsource',
-    util: 'util',
-    yargs: 'yargs',
-  },
+  env: 'development',
+  moduleMap: moduleMap,
+  plugins: [
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+    '@babel/plugin-proposal-optional-catch-binding',
+    '@babel/plugin-proposal-optional-chaining'
+  ],
+  target: 'flow'
+});
+
+const babelOptions = getBabelOptions({
+  ast: false,
+  moduleMap: moduleMap,
   plugins: [
     '@babel/plugin-transform-flow-strip-types',
     '@babel/plugin-transform-runtime',
     '@babel/plugin-proposal-nullish-coalescing-operator',
     '@babel/plugin-proposal-optional-catch-binding',
-    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-proposal-optional-chaining'
   ],
   postPlugins: [
     '@babel/plugin-transform-async-to-generator',
     '@babel/plugin-transform-modules-commonjs',
   ],
+  target: 'js',
   sourceType: 'script',
 });
+
 const del = require('del');
 const flatten = require('gulp-flatten');
 const fs = require('fs');
@@ -97,12 +115,13 @@ const header = require('gulp-header');
 const path = require('path');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
+const rename = require("gulp-rename");
 
 const SCRIPT_HASHBANG = '#!/usr/bin/env node\n';
 const DEVELOPMENT_HEADER =
   ['/**', ' * Relay v' + process.env.npm_package_version, ' */'].join('\n') +
   '\n';
-const PRODUCTION_HEADER =
+const PRODUCTION_HEADER = (isFlow) =>
   [
     '/**',
     ' * Relay v' + process.env.npm_package_version,
@@ -111,6 +130,8 @@ const PRODUCTION_HEADER =
     ' *',
     ' * This source code is licensed under the MIT license found in the',
     ' * LICENSE file in the root directory of this source tree.',
+    ' *',
+    ' *' + (isFlow ? " @flow" : ""),
     ' */',
   ].join('\n') + '\n';
 
@@ -252,7 +273,7 @@ function clean() {
 const modules = gulp.parallel(
   ...builds.map(
     build =>
-      function modulesTask() {
+      [function modulesTask() {
         return gulp
           .src(
             [
@@ -263,12 +284,29 @@ const modules = gulp.parallel(
             ],
             {
               cwd: path.join(PACKAGES, build.package),
-            }
-          )
+          })
           .pipe(babel(babelOptions))
           .pipe(flatten())
-          .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
-      }
+          .pipe(gulp.dest(path.join(DIST, build.package, 'lib')))
+          
+      },
+      function flowCopyTask() {
+        return gulp
+          .src(
+            [
+              '**/*.js',
+              '!**/__tests__/**',
+              '!**/__flowtests__/**',
+              '!**/__mocks__/**',
+            ],
+            {
+              cwd: path.join(PACKAGES, build.package),
+          })
+          .pipe(babel(flowBabelOptions))
+          .pipe(rename(path => { path.extname += ".flow"; }))
+          .pipe(flatten())
+          .pipe(gulp.dest(path.join(DIST, build.package, 'lib')))
+      }]
   )
 );
 
@@ -298,6 +336,14 @@ builds.forEach(build => {
 });
 const copyFiles = gulp.parallel(copyFilesTasks);
 
+const exportsTemplate = (isFlow, exportPath) =>  {
+  const typeExport = isFlow ? `export type * from './lib/${exportPath}';` : '';
+  return `${PRODUCTION_HEADER(isFlow)}
+module.exports = require('./lib/${exportPath}');
+${typeExport}
+  `;
+};
+
 const exportsFiles = gulp.series(
   copyFiles,
   modules,
@@ -305,15 +351,20 @@ const exportsFiles = gulp.series(
     ...builds.map(
       build =>
         function exportsFilesTask(done) {
-          Object.keys(build.exports).map(exportName =>
+          Object.keys(build.exports).map(exportName => {
+            const exportPath = build.exports[exportName];
+            
             fs.writeFileSync(
               path.join(DIST, build.package, exportName + '.js'),
-              PRODUCTION_HEADER +
-                `\nmodule.exports = require('./lib/${
-                  build.exports[exportName]
-                }');\n`
-            )
-          );
+              exportsTemplate(false, exportPath)
+            );
+
+            // create flowtype exports file
+            fs.writeFileSync(
+              path.join(DIST, build.package, exportName + '.js.flow'),
+              exportsTemplate(true, exportPath)
+            );
+          });
           done();
         }
     )
@@ -328,7 +379,7 @@ builds.forEach(build => {
         return gulp
           .src(path.join(DIST, build.package, 'lib', bin.entry))
           .pipe(buildDist(bin.output, bin, /* isProduction */ false))
-          .pipe(header(SCRIPT_HASHBANG + PRODUCTION_HEADER))
+          .pipe(header(SCRIPT_HASHBANG + PRODUCTION_HEADER(false)))
           .pipe(chmod(0o755))
           .pipe(gulp.dest(path.join(DIST, build.package, 'bin')));
       });

@@ -23,6 +23,7 @@ module.exports = function(options) {
     autoImport: options.autoImport || false,
     objectAssign: false,
     stripDEV: options.env === 'production',
+    target: options.target
   });
 
   // The module rewrite transform needs to be positioned relative to fbjs's
