@@ -358,7 +358,7 @@ function createVisitor(options: TypeGeneratorOptions) {
         return t.program([
           ...getFragmentImports(state),
           ...getEnumDefinitions(state),
-          importTypes(importedTypes, 'relay-runtime'),
+          importTypes(importedTypes, '@vincentriemer/relay-runtime'),
           ...fragmentTypes,
           exportType(node.name, type),
           exportType(dataTypeName, dataType),
