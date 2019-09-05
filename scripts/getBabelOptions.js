@@ -22,6 +22,7 @@ module.exports = function(options) {
     autoImport: options.autoImport || false,
     objectAssign: false,
     stripDEV: options.env === 'production',
+    target: options.target || 'js',
   });
 
   fbjsPreset.presets[0].plugins.push([
@@ -47,5 +48,6 @@ module.exports = function(options) {
   return {
     plugins: options.plugins.concat('@babel/plugin-transform-spread'),
     presets: [fbjsPreset],
+    retainLines: options.target === 'flow',
   };
 };

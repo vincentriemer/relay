@@ -140,6 +140,14 @@ module.exports = function(babel) {
           }
         },
       },
+      ExportNamedDeclaration: {
+        exit(path, state) {
+          if (!path.node.seen) {
+            path.node.seen = true;
+            transformImport(path, state);
+          }
+        },
+      },
     },
   };
 };

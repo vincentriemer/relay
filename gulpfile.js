@@ -10,7 +10,20 @@
 'use strict';
 
 const babel = require('gulp-babel');
-const babelOptions = require('./scripts/getBabelOptions')({
+const getBabelOptions = require('./scripts/getBabelOptions');
+
+const flowBabelOptions = getBabelOptions({
+  ast: false,
+  env: 'development',
+  plugins: [
+    '@babel/plugin-syntax-nullish-coalescing-operator',
+    '@babel/plugin-syntax-optional-catch-binding',
+    '@babel/plugin-syntax-optional-chaining',
+  ],
+  target: 'flow',
+});
+
+const babelOptions = getBabelOptions({
   ast: false,
   plugins: [
     '@babel/plugin-transform-flow-strip-types',
@@ -24,7 +37,9 @@ const babelOptions = require('./scripts/getBabelOptions')({
     '@babel/plugin-transform-modules-commonjs',
   ],
   sourceType: 'script',
+  target: 'js',
 });
+
 const del = require('del');
 const fs = require('fs');
 const gulp = require('gulp');
@@ -35,12 +50,13 @@ const once = require('gulp-once');
 const path = require('path');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
+const rename = require('gulp-rename');
 
 const SCRIPT_HASHBANG = '#!/usr/bin/env node\n';
 const DEVELOPMENT_HEADER =
   ['/**', ' * Relay v' + process.env.npm_package_version, ' */'].join('\n') +
   '\n';
-const PRODUCTION_HEADER =
+const PRODUCTION_HEADER = isFlow =>
   [
     '/**',
     ' * Relay v' + process.env.npm_package_version,
@@ -49,6 +65,8 @@ const PRODUCTION_HEADER =
     ' *',
     ' * This source code is licensed under the MIT license found in the',
     ' * LICENSE file in the root directory of this source tree.',
+    ' *',
+    ' *' + (isFlow ? '@flow' : ''),
     ' */',
   ].join('\n') + '\n';
 
@@ -223,21 +241,47 @@ const builds = [
       },
     ],
   },
+  {
+    package: 'relay-experimental',
+    exports: {
+      index: 'index.js',
+    },
+    bundles: [
+      {
+        entry: 'index.js',
+        output: 'relay-experimental',
+        libraryName: 'RelayExperimental',
+        libraryTarget: 'umd',
+      },
+    ],
+  },
 ];
 
 const modules = gulp.parallel(
-  ...builds.map(
-    build =>
-      function modulesTask() {
-        return gulp
-          .src(INCLUDE_GLOBS, {
-            cwd: path.join(PACKAGES, build.package),
-          })
-          .pipe(once())
-          .pipe(babel(babelOptions))
-          .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
-      },
-  ),
+  ...builds.map(build => [
+    function modulesTask() {
+      return gulp
+        .src(INCLUDE_GLOBS, {
+          cwd: path.join(PACKAGES, build.package),
+        })
+        .pipe(once())
+        .pipe(babel(babelOptions))
+        .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
+    },
+    function flowCopyTask() {
+      return gulp
+        .src(INCLUDE_GLOBS, {
+          cwd: path.join(PACKAGES, build.package),
+        })
+        .pipe(babel(flowBabelOptions))
+        .pipe(
+          rename(path => {
+            path.extname += '.flow';
+          }),
+        )
+        .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
+    },
+  ]),
 );
 
 const copyFilesTasks = [];
@@ -269,6 +313,14 @@ builds.forEach(build => {
 });
 const copyFiles = gulp.parallel(copyFilesTasks);
 
+const exportsTemplate = (isFlow, exportPath) => {
+  const typeExport = isFlow ? `export type * from './lib/${exportPath}';` : '';
+  return `${PRODUCTION_HEADER(isFlow)}
+module.exports = require('./lib/${exportPath}');
+${typeExport}
+  `;
+};
+
 const exportsFiles = gulp.series(
   copyFiles,
   modules,
@@ -276,15 +328,19 @@ const exportsFiles = gulp.series(
     ...builds.map(
       build =>
         function exportsFilesTask(done) {
-          Object.keys(build.exports).map(exportName =>
+          Object.keys(build.exports).map(exportName => {
+            const exportPath = build.exports[exportName];
+            // export implementation
             fs.writeFileSync(
               path.join(DIST, build.package, exportName + '.js'),
-              PRODUCTION_HEADER +
-                `\nmodule.exports = require('./lib/${
-                  build.exports[exportName]
-                }');\n`,
-            ),
-          );
+              exportsTemplate(false, exportPath),
+            );
+            // export flow types
+            fs.writeFileSync(
+              path.join(DIST, build.package, exportName + '.js.flow'),
+              exportsTemplate(true, exportPath),
+            );
+          });
           done();
         },
     ),
@@ -299,7 +355,7 @@ builds.forEach(build => {
         return gulp
           .src(path.join(DIST, build.package, 'lib', 'bin', bin.entry))
           .pipe(buildDist(bin.output, bin, /* isProduction */ false))
-          .pipe(header(SCRIPT_HASHBANG + PRODUCTION_HEADER))
+          .pipe(header(SCRIPT_HASHBANG + PRODUCTION_HEADER(false)))
           .pipe(chmod(0o755))
           .pipe(gulp.dest(path.join(DIST, build.package, 'bin')));
       });
