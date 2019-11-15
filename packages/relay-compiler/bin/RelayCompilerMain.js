@@ -10,6 +10,9 @@
 
 'use strict';
 
+import type {RequestParameters} from 'relay-runtime';
+
+const CodegenDirectory = require('../codegen/CodegenDirectory');
 const CodegenRunner = require('../codegen/CodegenRunner');
 const ConsoleReporter = require('../reporters/ConsoleReporter');
 const DotGraphQLParser = require('../core/DotGraphQLParser');
@@ -59,6 +62,12 @@ export type Config = {|
   persistFunction?: ?string | ?((text: string) => Promise<string>),
   artifactDirectory?: ?string,
   customScalars?: ScalarTypeMapping,
+  writeQueryParameters?: (
+    outputDirectory: CodegenDirectory,
+    filename: string,
+    moduleName: string,
+    requestParams: RequestParameters,
+  ) => void,
 |};
 
 function buildWatchExpression(config: {
@@ -327,9 +336,11 @@ function getCodegenRunner(config: Config): CodegenRunner {
         config.persistOutput,
         config.customScalars,
         persistQueryFunction,
+        config.writeQueryParameters,
       ),
       isGeneratedFile: (filePath: string) =>
-        filePath.endsWith('.graphql.' + outputExtension) &&
+        (filePath.endsWith('.graphql.' + outputExtension) ||
+          filePath.endsWith('$Parameters.' + outputExtension)) &&
         filePath.includes(generatedDirectoryName),
       parser: sourceParserName,
       baseParsers: ['graphql'],
@@ -361,6 +372,12 @@ function getRelayFileWriter(
   persistedQueryPath?: ?string,
   customScalars?: ScalarTypeMapping,
   persistFunction?: ?(text: string) => Promise<string>,
+  writeQueryParameters?: (
+    outputDirectory: CodegenDirectory,
+    filename: string,
+    moduleName: string,
+    requestParams: RequestParameters,
+  ) => void,
 ) {
   return async ({
     onlyValidate,
@@ -406,6 +423,7 @@ function getRelayFileWriter(
         typeGenerator: languagePlugin.typeGenerator,
         outputDir,
         persistQuery,
+        writeQueryParameters,
       },
       onlyValidate,
       schema,
