@@ -35,6 +35,7 @@ const once = require('gulp-once');
 const path = require('path');
 const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
+const rename = require('gulp-rename');
 
 const RELEASE_COMMIT_SHA = process.env.RELEASE_COMMIT_SHA;
 if (RELEASE_COMMIT_SHA && RELEASE_COMMIT_SHA.length !== 40) {
@@ -139,6 +140,7 @@ const builds = [
     package: 'react-relay',
     exports: {
       index: 'index.js',
+      hooks: 'hooks.js',
       ReactRelayContext: 'ReactRelayContext.js',
     },
     bundles: [
@@ -146,6 +148,12 @@ const builds = [
         entry: 'index.js',
         output: 'react-relay',
         libraryName: 'ReactRelay',
+        libraryTarget: 'umd',
+      },
+      {
+        entry: 'hooks.js',
+        output: 'react-relay-hooks',
+        libraryName: 'ReactRelayHooks',
         libraryTarget: 'umd',
       },
     ],
@@ -238,19 +246,58 @@ const builds = [
 ];
 
 const modules = gulp.parallel(
-  ...builds.map(
-    build =>
-      function modulesTask() {
-        return gulp
-          .src(INCLUDE_GLOBS, {
-            cwd: path.join(PACKAGES, build.package),
-          })
-          .pipe(once())
-          .pipe(babel(babelOptions))
-          .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
-      },
-  ),
+  ...builds.map(build => [
+    function modulesTask() {
+      return gulp
+        .src(INCLUDE_GLOBS, {
+          cwd: path.join(PACKAGES, build.package),
+        })
+        .pipe(once())
+        .pipe(babel(babelOptions))
+        .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
+    },
+    function flowCopyTask() {
+      return gulp
+        .src(INCLUDE_GLOBS, {
+          cwd: path.join(PACKAGES, build.package),
+        })
+        .pipe(
+          rename(path => {
+            path.extname += '.flow';
+          }),
+        )
+        .pipe(gulp.dest(path.join(DIST, build.package, 'lib')));
+    },
+  ]),
 );
+
+const copyRelayExperimental = [
+  function copyRelayExperimental() {
+    return gulp
+      .src(INCLUDE_GLOBS, {
+        cwd: path.join(PACKAGES, 'relay-experimental'),
+      })
+      .pipe(once())
+      .pipe(babel(babelOptions))
+      .pipe(
+        gulp.dest(path.join(DIST, 'react-relay', 'lib', 'relay-experimental')),
+      );
+  },
+  function copyRelayExperimentalFlowTypes() {
+    return gulp
+      .src(INCLUDE_GLOBS, {
+        cwd: path.join(PACKAGES, 'relay-experimental'),
+      })
+      .pipe(
+        rename(path => {
+          path.extname += '.flow';
+        }),
+      )
+      .pipe(
+        gulp.dest(path.join(DIST, 'react-relay', 'lib', 'relay-experimental')),
+      );
+  },
+];
 
 const copyFilesTasks = [];
 builds.forEach(build => {
@@ -280,22 +327,35 @@ builds.forEach(build => {
 });
 const copyFiles = gulp.parallel(copyFilesTasks);
 
+const exportsTemplate = (isFlow, exportPath) => {
+  const typeExport = isFlow ? `export type * from './lib/${exportPath}';` : '';
+  return `${isFlow ? '// @flow' : ''}
+  ${PRODUCTION_HEADER}
+module.exports = require('./lib/${exportPath}');
+${typeExport}
+  `;
+};
+
 const exportsFiles = gulp.series(
   copyFiles,
   modules,
+  copyRelayExperimental,
   gulp.parallel(
     ...builds.map(
       build =>
         function exportsFilesTask(done) {
-          Object.keys(build.exports).map(exportName =>
+          Object.keys(build.exports).map(exportName => {
+            const exportPath = build.exports[exportName];
             fs.writeFileSync(
               path.join(DIST, build.package, exportName + '.js'),
-              PRODUCTION_HEADER +
-                `\nmodule.exports = require('./lib/${
-                  build.exports[exportName]
-                }');\n`,
-            ),
-          );
+              exportsTemplate(false, exportPath),
+            );
+            // create flowtype exports file
+            fs.writeFileSync(
+              path.join(DIST, build.package, exportName + '.js.flow'),
+              exportsTemplate(true, exportPath),
+            );
+          });
           done();
         },
     ),
