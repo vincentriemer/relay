@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
+
+// flowlint ambiguous-object-type:error
 
 'use strict';
 
@@ -20,23 +22,24 @@ import type {
   ClientExtension,
   Condition,
   Defer,
-  Connection,
-  ConnectionField,
   Directive,
   Fragment,
   FragmentSpread,
-  InlineFragment,
   IR,
+  InlineDataFragmentSpread,
+  InlineFragment,
   LinkedField,
+  ListValue,
   Literal,
   LocalArgumentDefinition,
   ModuleImport,
+  ObjectFieldValue,
+  ObjectValue,
   Request,
   Root,
   RootArgumentDefinition,
   ScalarField,
   SplitOperation,
-  InlineDataFragmentSpread,
   Stream,
   Variable,
 } from './IR';
@@ -46,16 +49,17 @@ type NodeVisitor<S> = {|
   ClientExtension?: NodeVisitorFunction<ClientExtension, S>,
   Condition?: NodeVisitorFunction<Condition, S>,
   Defer?: NodeVisitorFunction<Defer, S>,
-  Connection?: NodeVisitorFunction<Connection, S>,
-  ConnectionField?: NodeVisitorFunction<ConnectionField, S>,
   Directive?: NodeVisitorFunction<Directive, S>,
   Fragment?: NodeVisitorFunction<Fragment, S>,
   FragmentSpread?: NodeVisitorFunction<FragmentSpread, S>,
   InlineFragment?: NodeVisitorFunction<InlineFragment, S>,
   LinkedField?: NodeVisitorFunction<LinkedField, S>,
+  ListValue?: NodeVisitorFunction<ListValue, S>,
   Literal?: NodeVisitorFunction<Literal, S>,
   LocalArgumentDefinition?: NodeVisitorFunction<LocalArgumentDefinition, S>,
   ModuleImport?: NodeVisitorFunction<ModuleImport, S>,
+  ObjectFieldValue?: NodeVisitorFunction<ObjectFieldValue, S>,
+  ObjectValue?: NodeVisitorFunction<ObjectValue, S>,
   Request?: NodeVisitorFunction<Request, S>,
   Root?: NodeVisitorFunction<Root, S>,
   InlineDataFragmentSpread?: NodeVisitorFunction<InlineDataFragmentSpread, S>,
@@ -247,7 +251,6 @@ class Transformer<S> {
       case 'InlineDataFragmentSpread':
         nextNode = this._traverseChildren(prevNode, ['selections']);
         break;
-      case 'ConnectionField':
       case 'LinkedField':
         nextNode = this._traverseChildren(prevNode, [
           'args',
@@ -258,11 +261,14 @@ class Transformer<S> {
           nextNode = null;
         }
         break;
-      case 'Connection':
-        nextNode = this._traverseChildren(prevNode, ['args', 'selections']);
-        if (!nextNode.selections.length) {
-          nextNode = null;
-        }
+      case 'ListValue':
+        nextNode = this._traverseChildren(prevNode, ['items']);
+        break;
+      case 'ObjectFieldValue':
+        nextNode = this._traverseChildren(prevNode, null, ['value']);
+        break;
+      case 'ObjectValue':
+        nextNode = this._traverseChildren(prevNode, ['fields']);
         break;
       case 'Condition':
         nextNode = this._traverseChildren(

@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const IRTransformer = require('../core/IRTransformer');
@@ -84,12 +86,6 @@ function transformNode<T: Node>(
         nextSelection = transformNode(context, fragments, selection);
         break;
       case 'LinkedField':
-        nextSelection = transformNode(context, fragments, selection);
-        break;
-      case 'ConnectionField':
-        nextSelection = transformNode(context, fragments, selection);
-        break;
-      case 'Connection':
         nextSelection = transformNode(context, fragments, selection);
         break;
       case 'InlineFragment':

@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const IRTransformer = require('../core/IRTransformer');
@@ -23,7 +25,6 @@ const {ConnectionInterface, RelayFeatureFlags} = require('relay-runtime');
 import type CompilerContext from '../core/CompilerContext';
 import type {
   Argument,
-  ConnectionField,
   Directive,
   Fragment,
   Handle,
@@ -44,6 +45,7 @@ type Options = {
   path: Array<?string>,
   // Metadata recorded for @connection fields
   connectionMetadata: Array<ConnectionMetadata>,
+  ...
 };
 
 type ConnectionArguments = {|
@@ -54,6 +56,7 @@ type ConnectionArguments = {|
   stream: ?{|
     if: ?Argument,
     initialCount: ?Argument,
+    useCustomizedBatch: ?Argument,
     label: string,
   |},
 |};
@@ -109,6 +112,7 @@ const SCHEMA_EXTENSION = `
     label: String!
     initial_count: Int!
     if: Boolean = true
+    use_customized_batch: Boolean = false
     dynamicKey_UNSTABLE: String
   ) on FIELD
 `;
@@ -291,6 +295,9 @@ function buildConnectionArguments(
     const initialCountArg = connectionDirective.args.find(
       arg => arg.name === 'initial_count',
     );
+    const useCustomizedBatchArg = connectionDirective.args.find(
+      arg => arg.name === 'use_customized_batch',
+    );
     const ifArg = connectionDirective.args.find(arg => arg.name === 'if');
     if (label != null && typeof label !== 'string') {
       const labelArg = connectionDirective.args.find(
@@ -303,7 +310,12 @@ function buildConnectionArguments(
         [labelArg?.value?.loc ?? connectionDirective.loc],
       );
     }
-    stream = {if: ifArg, initialCount: initialCountArg, label: label ?? key};
+    stream = {
+      if: ifArg,
+      initialCount: initialCountArg,
+      useCustomizedBatch: useCustomizedBatchArg,
+      label: label ?? key,
+    };
   }
 
   // T45504512: new connection model
@@ -338,7 +350,7 @@ function buildConnectionArguments(
 }
 
 function buildConnectionMetadata(
-  field: LinkedField | ConnectionField,
+  field: LinkedField,
   path: Array<?string>,
   stream: boolean,
 ): ConnectionMetadata {
@@ -453,6 +465,7 @@ function transformConnectionSelections(
       args: [
         stream.if,
         stream.initialCount,
+        stream.useCustomizedBatch,
         {
           kind: 'Argument',
           loc: derivedDirectiveLocation,
@@ -674,10 +687,7 @@ function transformConnectionSelections(
   return selections;
 }
 
-function findArg(
-  field: LinkedField | ConnectionField,
-  argName: string,
-): ?Argument {
+function findArg(field: LinkedField, argName: string): ?Argument {
   return field.args && field.args.find(arg => arg.name === argName);
 }
 

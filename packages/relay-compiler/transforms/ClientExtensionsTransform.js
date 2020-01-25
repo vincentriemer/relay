@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const IRTransformer = require('../core/IRTransformer');
@@ -104,7 +106,6 @@ function traverseSelections<T: Node>(
           [selection.loc],
         );
       case 'Condition':
-      case 'Connection':
       case 'Defer':
       case 'InlineDataFragmentSpread':
       case 'ModuleImport':
@@ -122,7 +123,6 @@ function traverseSelections<T: Node>(
         } else {
           return selection;
         }
-      case 'ConnectionField':
       case 'LinkedField': {
         if (
           schema.isClientDefinedField(

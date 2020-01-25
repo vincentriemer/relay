@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const invariant = require('invariant');
@@ -72,6 +74,7 @@ function printSelections(
   options?: {
     parentDirectives?: string,
     isClientExtension?: boolean,
+    ...
   },
 ): string {
   const selections = node.selections;
@@ -97,6 +100,7 @@ function printField(
   options?: {
     parentDirectives?: string,
     isClientExtension?: boolean,
+    ...
   },
 ): string {
   const parentDirectives = options?.parentDirectives ?? '';
@@ -120,23 +124,18 @@ function printSelection(
   options?: {
     parentDirectives?: string,
     isClientExtension?: boolean,
+    ...
   },
 ): string {
   let str;
   const parentDirectives = options?.parentDirectives ?? '';
   const isClientExtension = options?.isClientExtension === true;
-  if (
-    selection.kind === 'LinkedField' ||
-    selection.kind === 'ConnectionField'
-  ) {
+  if (selection.kind === 'LinkedField') {
     str = printField(schema, selection, {parentDirectives, isClientExtension});
     str += printSelections(schema, selection, indent + INDENT, {
       isClientExtension,
     });
-  } else if (
-    selection.kind === 'ModuleImport' ||
-    selection.kind === 'Connection'
-  ) {
+  } else if (selection.kind === 'ModuleImport') {
     str = selection.selections
       .map(matchSelection =>
         printSelection(schema, matchSelection, indent, {
@@ -202,6 +201,13 @@ function printSelection(
         selection.initialCount,
         null,
       ) ?? ''}`;
+    }
+    if (selection.useCustomizedBatch !== null) {
+      streamStr += `, use_customized_batch: ${printValue(
+        schema,
+        selection.useCustomizedBatch,
+        null,
+      ) ?? 'false'}`;
     }
     streamStr += ')';
     streamStr += parentDirectives;
@@ -376,6 +382,36 @@ function printValue(
   }
   if (value.kind === 'Variable') {
     return '$' + value.variableName;
+  } else if (value.kind === 'ObjectValue') {
+    invariant(
+      type && schema.isInputObject(type),
+      'GraphQLIRPrinter: Need an InputObject type to print objects.',
+    );
+    const inputType = schema.assertInputObjectType(type);
+    const pairs = value.fields
+      .map(field => {
+        const fieldConfig =
+          type != null
+            ? schema.hasField(inputType, field.name)
+              ? schema.getFieldConfig(schema.expectField(inputType, field.name))
+              : null
+            : null;
+        const innerValue =
+          fieldConfig && printValue(schema, field.value, fieldConfig.type);
+        return innerValue == null ? null : field.name + ': ' + innerValue;
+      })
+      .filter(Boolean);
+
+    return '{' + pairs.join(', ') + '}';
+  } else if (value.kind === 'ListValue') {
+    invariant(
+      type && schema.isList(type),
+      'GraphQLIRPrinter: Need a type in order to print arrays.',
+    );
+    const innerType = schema.getListItemType(type);
+    return `[${value.items
+      .map(i => printValue(schema, i, innerType))
+      .join(', ')}]`;
   } else if (value.value != null) {
     return printLiteral(schema, value.value, type);
   } else {

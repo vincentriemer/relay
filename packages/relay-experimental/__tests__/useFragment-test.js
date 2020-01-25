@@ -9,6 +9,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const React = require('react');
@@ -153,8 +155,9 @@ describe('useFragment', () => {
     SingularRenderer = props => null;
     PluralRenderer = props => null;
     const SingularContainer = (props: {
-      userRef?: {$data?: {}},
+      userRef?: {$data?: {...}, ...},
       owner: $FlowFixMe,
+      ...
     }) => {
       // We need a render a component to run a Hook
       const owner = props.owner;
@@ -172,8 +175,9 @@ describe('useFragment', () => {
     };
 
     const PluralContainer = (props: {
-      usersRef?: $ReadOnlyArray<{$data?: {}}>,
+      usersRef?: $ReadOnlyArray<{$data?: {...}, ...}>,
       owner: $FlowFixMe,
+      ...
     }) => {
       // We need a render a component to run a Hook
       const owner = props.owner;
@@ -203,9 +207,12 @@ describe('useFragment', () => {
     renderSingularFragment = (props?: {
       owner?: $FlowFixMe,
       userRef?: $FlowFixMe,
+      ...
     }) => {
       return TestRenderer.create(
         <React.Suspense fallback="Singular Fallback">
+          {/* $FlowFixMe(site=www,mobile) this comment suppresses an error found improving the
+           * type of React$Node */}
           <ContextProvider>
             <SingularContainer owner={singularQuery} {...props} />
           </ContextProvider>
@@ -216,9 +223,12 @@ describe('useFragment', () => {
     renderPluralFragment = (props?: {
       owner?: $FlowFixMe,
       userRef?: $FlowFixMe,
+      ...
     }) => {
       return TestRenderer.create(
         <React.Suspense fallback="Plural Fallback">
+          {/* $FlowFixMe(site=www,mobile) this comment suppresses an error found improving the
+           * type of React$Node */}
           <ContextProvider>
             <PluralContainer owner={pluralQuery} {...props} />
           </ContextProvider>
@@ -232,9 +242,6 @@ describe('useFragment', () => {
     renderSpy.mockClear();
   });
 
-  // These tests are only a sanity check for useFragment as a wrapper
-  // around useFragmentNodes
-  // See full test behavior in useFragmentNodes-test.
   it('should render singular fragment without error when data is available', () => {
     renderSingularFragment();
     assertFragmentResults({

@@ -9,10 +9,12 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
-jest.mock('fbjs/lib/ExecutionEnvironment', () => ({
-  canUseDOM: true,
+jest.mock('../ExecutionEnvironment', () => ({
+  isServer: false,
 }));
 
 const prepareEntryPoint = require('../prepareEntryPoint');

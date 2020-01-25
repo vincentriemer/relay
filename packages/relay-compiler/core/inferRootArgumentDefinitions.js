@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 const CompilerContext = require('./CompilerContext');
@@ -20,7 +22,6 @@ import type {
   Argument,
   ArgumentDefinition,
   Condition,
-  Connection,
   Defer,
   Fragment,
   FragmentSpread,
@@ -203,22 +204,39 @@ function visit(
       }
     },
     Argument(argument: Argument) {
-      if (argument.value.kind !== 'Variable') {
+      if (argument.value.kind === 'Literal') {
         return false;
       }
-      const variable = argument.value;
-      const type = variable.type ?? argument.type;
-      if (type == null) {
-        return;
-      }
-      if (!argumentDefinitions.has(variable.variableName)) {
-        // root variable
-        argumentDefinitions.set(variable.variableName, {
-          kind: 'RootArgumentDefinition',
-          loc: {kind: 'Derived', source: argument.loc},
-          name: variable.variableName,
-          type: type,
-        });
+      const values = [argument.value];
+      while (values.length > 0) {
+        const currentValue = values.pop();
+        if (currentValue.kind === 'Variable') {
+          const type = currentValue.type ?? argument.type;
+          if (type == null) {
+            continue;
+          }
+          if (!argumentDefinitions.has(currentValue.variableName)) {
+            // root variable
+            argumentDefinitions.set(currentValue.variableName, {
+              kind: 'RootArgumentDefinition',
+              loc: {kind: 'Derived', source: argument.loc},
+              name: currentValue.variableName,
+              type: type,
+            });
+          }
+        } else if (currentValue.kind === 'ObjectValue') {
+          currentValue.fields.forEach(fieldValue => {
+            if (fieldValue.value.kind !== 'Literal') {
+              values.push(fieldValue.value);
+            }
+          });
+        } else if (currentValue.kind === 'ListValue') {
+          currentValue.items.forEach(listValue => {
+            if (listValue.kind !== 'Literal') {
+              values.push(listValue);
+            }
+          });
+        }
       }
       return false;
     },
@@ -239,31 +257,6 @@ function visit(
           type: type,
         });
       }
-    },
-    Connection(connection: Connection) {
-      const stream = connection.stream;
-      if (stream == null) {
-        return;
-      }
-      const defaultType = SchemaUtils.getNonNullBooleanInput(
-        context.getSchema(),
-      );
-      [stream.if, stream.initialCount].forEach(variable => {
-        if (variable == null || variable.kind !== 'Variable') {
-          return;
-        }
-        const type = variable.type ?? defaultType;
-
-        if (!argumentDefinitions.has(variable.variableName)) {
-          // root variable
-          argumentDefinitions.set(variable.variableName, {
-            kind: 'RootArgumentDefinition',
-            loc: {kind: 'Derived', source: variable.loc},
-            name: variable.variableName,
-            type,
-          });
-        }
-      });
     },
     Defer(defer: Defer) {
       const variable = defer.if;

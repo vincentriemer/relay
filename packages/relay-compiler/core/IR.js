@@ -8,6 +8,8 @@
  * @format
  */
 
+// flowlint ambiguous-object-type:error
+
 'use strict';
 
 import type {
@@ -18,7 +20,7 @@ import type {
 } from './Schema';
 import type {Source} from 'graphql';
 
-export type Metadata = ?{[key: string]: mixed};
+export type Metadata = ?{[key: string]: mixed, ...};
 
 export type SourceLocation = {|
   +kind: 'Source',
@@ -53,7 +55,7 @@ export type ArgumentDefinition =
   | LocalArgumentDefinition
   | RootArgumentDefinition;
 
-export type ArgumentValue = Literal | Variable;
+export type ArgumentValue = ListValue | Literal | ObjectValue | Variable;
 
 export type Condition = {|
   +kind: 'Condition',
@@ -70,7 +72,7 @@ export type Directive = {|
   +name: string,
 |};
 
-export type Field = LinkedField | ScalarField | ConnectionField;
+export type Field = LinkedField | ScalarField;
 
 export type Fragment = {|
   +argumentDefinitions: $ReadOnlyArray<ArgumentDefinition>,
@@ -111,6 +113,7 @@ export type Stream = {|
   +label: string,
   +if: ArgumentValue | null,
   +initialCount: ArgumentValue,
+  +useCustomizedBatch: ArgumentValue | null,
 |};
 
 export type InlineDataFragmentSpread = {|
@@ -125,8 +128,6 @@ export type IR =
   | Argument
   | ClientExtension
   | Condition
-  | Connection
-  | ConnectionField
   | Defer
   | Directive
   | Fragment
@@ -134,9 +135,12 @@ export type IR =
   | InlineDataFragmentSpread
   | InlineFragment
   | LinkedField
+  | ListValue
   | Literal
   | LocalArgumentDefinition
   | ModuleImport
+  | ObjectFieldValue
+  | ObjectValue
   | Request
   | Root
   | RootArgumentDefinition
@@ -144,6 +148,19 @@ export type IR =
   | SplitOperation
   | Stream
   | Variable;
+
+export type ObjectFieldValue = {|
+  +kind: 'ObjectFieldValue',
+  +loc: Location,
+  +name: string,
+  +value: ArgumentValue,
+|};
+
+export type ObjectValue = {|
+  +kind: 'ObjectValue',
+  +fields: $ReadOnlyArray<ObjectFieldValue>,
+  +loc: Location,
+|};
 
 export type RootArgumentDefinition = {|
   +kind: 'RootArgumentDefinition',
@@ -176,22 +193,6 @@ export type ClientExtension = {|
   +selections: $ReadOnlyArray<Selection>,
 |};
 
-export type Connection = {|
-  +args: $ReadOnlyArray<Argument>,
-  +kind: 'Connection',
-  +label: string,
-  +loc: Location,
-  +name: string,
-  +selections: $ReadOnlyArray<Selection>,
-  +stream: {|
-    +deferLabel: string,
-    +if: ArgumentValue | null,
-    +initialCount: ArgumentValue,
-    +streamLabel: string,
-  |} | null,
-  +type: LinkedFieldTypeID,
-|};
-
 export type LinkedField = {|
   +alias: string,
   +args: $ReadOnlyArray<Argument>,
@@ -206,16 +207,10 @@ export type LinkedField = {|
   +type: LinkedFieldTypeID,
 |};
 
-export type ConnectionField = {|
-  +alias: string,
-  +args: $ReadOnlyArray<Argument>,
-  +directives: $ReadOnlyArray<Directive>,
-  +kind: 'ConnectionField',
+export type ListValue = {|
+  +kind: 'ListValue',
+  +items: $ReadOnlyArray<ArgumentValue>,
   +loc: Location,
-  +metadata: Metadata,
-  +name: string,
-  +selections: $ReadOnlyArray<Selection>,
-  +type: LinkedFieldTypeID,
 |};
 
 export type Literal = {|
@@ -253,8 +248,6 @@ export type ModuleImport = {|
 export type Node =
   | ClientExtension
   | Condition
-  | Connection
-  | ConnectionField
   | Defer
   | Fragment
   | InlineDataFragmentSpread
@@ -303,8 +296,6 @@ export type ScalarField = {|
 export type Selection =
   | ClientExtension
   | Condition
-  | Connection
-  | ConnectionField
   | Defer
   | FragmentSpread
   | InlineDataFragmentSpread
