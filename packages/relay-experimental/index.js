@@ -16,6 +16,7 @@
 const EntryPointContainer = require('./EntryPointContainer.react');
 const LazyLoadEntryPointContainer_DEPRECATED = require('./LazyLoadEntryPointContainer_DEPRECATED.react');
 const MatchContainer = require('./MatchContainer');
+const PreloadableQueryRegistry = require('./PreloadableQueryRegistry');
 const ProfilerContext = require('./ProfilerContext');
 const RelayEnvironmentProvider = require('./RelayEnvironmentProvider');
 
@@ -37,6 +38,7 @@ export type * from './EntryPointTypes.flow';
 export type {MatchContainerProps, MatchPointer} from './MatchContainer';
 export type {ProfilerContextType} from './ProfilerContext';
 export type {Direction, LoadMoreFn} from './useLoadMoreFunction';
+export type {UseMutationConfig} from './useMutation';
 export type {
   RefetchFn,
   RefetchFnDynamic,
@@ -49,6 +51,7 @@ module.exports = {
   MatchContainer: MatchContainer,
   ProfilerContext: ProfilerContext,
   RelayEnvironmentProvider: RelayEnvironmentProvider,
+  PreloadableQueryRegistry: PreloadableQueryRegistry,
 
   fetchQuery: fetchQuery,
 

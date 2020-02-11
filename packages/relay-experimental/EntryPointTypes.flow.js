@@ -41,7 +41,7 @@ export type PreloadOptions = {|
 // $Parameters.js value matches the type param provided to preloadQuery.
 // eslint-disable-next-line no-unused-vars
 export type PreloadableConcreteRequest<TQuery: OperationType> = {|
-  queryResource: JSResourceReference<ConcreteRequest>,
+  kind: 'PreloadableConcreteRequest',
   params: RequestParameters,
 |};
 
@@ -58,6 +58,13 @@ export type PreloadedQuery<
   +name: string,
   +source: ?Observable<GraphQLResponse>,
   +variables: $ElementType<TQuery, 'variables'>,
+  +status: PreloadQueryStatus,
+|};
+
+export type PreloadQueryStatus = {|
+  +cacheConfig: ?CacheConfig,
+  +source: 'cache' | 'network',
+  +cacheTime: ?number,
 |};
 
 /**

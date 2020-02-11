@@ -207,7 +207,10 @@ export type CheckOptions = {|
   handlers: $ReadOnlyArray<MissingFieldHandler>,
 |};
 
-export type OperationAvailability = 'available' | 'stale' | 'missing';
+export type OperationAvailability =
+  | {|status: 'available', fetchTime: ?number|}
+  | {|status: 'stale'|}
+  | {|status: 'missing'|};
 
 export type {InvalidationState} from './RelayModernStore';
 
@@ -584,6 +587,15 @@ export interface IEnvironment {
     operation: OperationDescriptor,
     source: RelayObservable<GraphQLResponse>,
   |}): RelayObservable<GraphQLResponse>;
+
+  /**
+   * Returns true if a request is currently "active", meaning it's currently
+   * actively receiving payloads or downloading modules, and has not received
+   * a final payload yet. Note that a request might still be pending (or "in flight")
+   * without actively receiving payload, for example a live query or an
+   * active GraphQL subscription
+   */
+  isRequestActive(requestIdentifier: string): boolean;
 }
 
 /**

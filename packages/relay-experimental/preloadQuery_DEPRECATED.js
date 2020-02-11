@@ -14,6 +14,7 @@
 'use strict';
 
 const ExecutionEnvironment = require('./ExecutionEnvironment');
+const PreloadableQueryRegistry = require('./PreloadableQueryRegistry');
 
 const invariant = require('invariant');
 
@@ -31,6 +32,7 @@ import type {
   PreloadedQuery,
   PreloadFetchPolicy,
   PreloadOptions,
+  PreloadQueryStatus,
 } from './EntryPointTypes.flow';
 import type {
   ConcreteRequest,
@@ -58,6 +60,7 @@ type PendingQueryEntry =
       fetchPolicy: PreloadFetchPolicy,
       kind: 'network',
       name: string,
+      status: PreloadQueryStatus,
       subject: ReplaySubject<GraphQLResponse>,
       subscription: Subscription,
     |}>
@@ -67,6 +70,7 @@ type PendingQueryEntry =
       fetchPolicy: PreloadFetchPolicy,
       kind: 'cache',
       name: string,
+      status: PreloadQueryStatus,
     |}>;
 
 function preloadQuery<TQuery: OperationType, TEnvironmentProviderOptions>(
@@ -111,6 +115,7 @@ function preloadQuery<TQuery: OperationType, TEnvironmentProviderOptions>(
     name: queryEntry.name,
     source,
     variables,
+    status: queryEntry.status,
   };
 }
 
@@ -123,10 +128,10 @@ function preloadQueryDeduped<TQuery: OperationType>(
 ): PendingQueryEntry {
   let params;
   let query: ?ConcreteRequest;
-  if (preloadableRequest.queryResource != null) {
+  if (preloadableRequest.kind === 'PreloadableConcreteRequest') {
     const preloadableConcreteRequest: PreloadableConcreteRequest<TQuery> = (preloadableRequest: $FlowFixMe);
     params = preloadableConcreteRequest.params;
-    query = preloadableConcreteRequest.queryResource.getModuleIfRequired();
+    query = params.id != null ? PreloadableQueryRegistry.get(params.id) : null;
   } else {
     query = getRequest((preloadableRequest: $FlowFixMe));
     params = query.params;
@@ -140,14 +145,13 @@ function preloadQueryDeduped<TQuery: OperationType>(
   }`;
   const prevQueryEntry = pendingQueries.get(cacheKey);
 
-  const shouldFulfillFromCache =
-    fetchPolicy === STORE_OR_NETWORK_DEFAULT &&
-    query != null &&
-    environment.check(createOperationDescriptor(query, variables)) ===
-      'available';
+  const availability =
+    fetchPolicy === STORE_OR_NETWORK_DEFAULT && query != null && query != null
+      ? environment.check(createOperationDescriptor(query, variables))
+      : {status: 'missing'};
 
   let nextQueryEntry;
-  if (shouldFulfillFromCache) {
+  if (availability.status === 'available' && query != null) {
     nextQueryEntry =
       prevQueryEntry && prevQueryEntry.kind === 'cache'
         ? prevQueryEntry
@@ -157,6 +161,11 @@ function preloadQueryDeduped<TQuery: OperationType>(
             fetchPolicy,
             kind: 'cache',
             name: params.name,
+            status: {
+              cacheConfig: networkCacheConfig,
+              source: 'cache',
+              cacheTime: availability?.fetchTime ?? null,
+            },
           };
     if (!ExecutionEnvironment.isServer && prevQueryEntry == null) {
       setTimeout(() => {
@@ -187,6 +196,11 @@ function preloadQueryDeduped<TQuery: OperationType>(
       fetchPolicy,
       kind: 'network',
       name: params.name,
+      status: {
+        cacheConfig: networkCacheConfig,
+        source: 'network',
+        cacheTime: null,
+      },
       subject,
       subscription: source
         .finally(() => {

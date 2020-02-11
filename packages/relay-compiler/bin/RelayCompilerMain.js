@@ -60,6 +60,7 @@ export type Config = {|
   quiet: boolean,
   persistOutput?: ?string,
   noFutureProofEnums: boolean,
+  eagerESModules?: boolean,
   language: string | PluginInitializer,
   persistFunction?: ?string | ?((text: string) => Promise<string>),
   artifactDirectory?: ?string,
@@ -123,9 +124,14 @@ type LanguagePlugin = PluginInitializer | {default: PluginInitializer, ...};
  */
 function getLanguagePlugin(
   language: string | PluginInitializer,
+  options?: {|
+    eagerESModules: boolean,
+  |},
 ): PluginInterface {
   if (language === 'javascript') {
-    return RelayLanguagePluginJavaScript();
+    return RelayLanguagePluginJavaScript({
+      eagerESModules: Boolean(options && options.eagerESModules),
+    });
   } else {
     let languagePlugin: LanguagePlugin;
     if (typeof language === 'string') {
@@ -278,7 +284,9 @@ function getCodegenRunner(config: Config): CodegenRunner {
     quiet: config.quiet,
   });
   const schema = getSchemaSource(config.schema);
-  const languagePlugin = getLanguagePlugin(config.language);
+  const languagePlugin = getLanguagePlugin(config.language, {
+    eagerESModules: config.eagerESModules === true,
+  });
   const persistQueryFunction = getPersistQueryFunction(config);
   const inputExtensions = config.extensions || languagePlugin.inputExtensions;
   const outputExtension = languagePlugin.outputExtension;
