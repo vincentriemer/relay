@@ -119,7 +119,7 @@ async function writeRelayGeneratedFile(
       codegenDir.markUnchanged(filename);
       if (
         writeQueryParameters &&
-        oldRequestParameters &&
+        // oldRequestParameters &&
         queryParametersFilename != null &&
         generatedNode.kind === RelayConcreteNode.REQUEST &&
         generatedNode.params.operationKind === 'query'
@@ -128,7 +128,7 @@ async function writeRelayGeneratedFile(
           codegenDir,
           queryParametersFilename,
           moduleName,
-          oldRequestParameters,
+          generatedNode.params,
         );
       }
       return oldRequestParameters
