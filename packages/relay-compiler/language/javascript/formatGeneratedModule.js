@@ -14,6 +14,47 @@
 
 import type {FormatModule} from '../RelayLanguagePluginInterface';
 
+// ESModule support is achieved via a regex replacement of the require statements.
+// this is super hacky but this was the simplest solution with the current compiler
+// architecture
+const requireRegex = /require\('(.*)'\)/g;
+
+const getImportedQueryTargets = concreteText => {
+  let matches;
+  let output = [];
+  while ((matches = requireRegex.exec(concreteText))) {
+    output.push(matches[1]);
+  }
+  return output;
+};
+
+const buildModuleIdentifierMap = importPaths => {
+  const result = {};
+  importPaths.forEach(path => {
+    const identifier = path.replace(/[^a-zA-Z]/g, '_');
+    result[path] = identifier;
+  });
+  return result;
+};
+
+const printExternalQueryImports = moduleIdentifierMap => {
+  let result = [];
+  Object.keys(moduleIdentifierMap).forEach(path => {
+    const id = moduleIdentifierMap[path];
+    result.push(`import ${id} from '${path}';`);
+  });
+  return result.join('\n');
+};
+
+const replaceRequiresWithImportIdentifiers = (
+  concreteText,
+  moduleIdentifierMap,
+) => {
+  return concreteText.replace(requireRegex, (_, path) => {
+    return moduleIdentifierMap[path];
+  });
+};
+
 const formatGeneratedModule: FormatModule = ({
   moduleName,
   documentType,
@@ -22,6 +63,7 @@ const formatGeneratedModule: FormatModule = ({
   typeText,
   hash,
   sourceHash,
+  importText,
 }) => {
   const documentTypeImport = documentType
     ? `import type { ${documentType} } from 'relay-runtime';`
@@ -42,6 +84,8 @@ ${documentTypeImport}
 ${typeText || ''}
 */
 
+${importText || ''}
+
 ${docTextComment}
 const node/*: ${documentType || 'empty'}*/ = ${concreteText};
 // prettier-ignore
@@ -55,8 +99,22 @@ module.exports = node;
 `;
 };
 
-const formatGeneratedESModule: FormatModule = options => {
-  return `${formatGeneratedModule(options)}
+const formatGeneratedESModule: FormatModule = ({concreteText, ...options}) => {
+  const importPaths = getImportedQueryTargets(concreteText);
+  const moduleIdentifierMap = buildModuleIdentifierMap(importPaths);
+
+  const topLevelQueryImport = printExternalQueryImports(moduleIdentifierMap);
+  const esModuleConcreteText = replaceRequiresWithImportIdentifiers(
+    concreteText,
+    moduleIdentifierMap,
+  );
+
+  const formattedModule = formatGeneratedModule({
+    ...options,
+    concreteText: esModuleConcreteText,
+    importText: topLevelQueryImport,
+  });
+  return `${formattedModule}
 export default node;
 `;
 };

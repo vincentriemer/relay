@@ -184,6 +184,11 @@ export type FormatModule = ({|
    * GraphQL Schema Interface
    */
   schema: Schema,
+
+  /**
+   * Top level query imports included in the generated node.
+   */
+  importText?: string,
 |}) => string;
 
 /**
